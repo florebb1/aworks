@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.laidback.mapper.BbsOnetooneMapper">
+    <select id="count" parameterType="map" resultType="int">
+        SELECT
+        COUNT(*)
+        FROM bbs_onetoone bo
+        LEFT OUTER JOIN member u ON bo.user_seq = u.seq
+        WHERE 1 = 1 and bo.delete_datetime is null
+        <if test="qnaType != null">
+            AND bo.qna_type IN
+            <foreach item="qnaVal" collection="qnaType" separator="," open="(" close=")">
+                #{qnaVal}
+            </foreach>
+        </if>
+        <if test="startDate != null">
+            AND to_char(bo.create_datetime,'YYYY-MM-DD') <![CDATA[ >= ]]> #{startDate}
+        </if>
+        <if test="endDate != null">
+            AND to_char(bo.create_datetime,'YYYY-MM-DD') <![CDATA[ <= ]]> #{endDate}
+        </if>
+        <if test="searchWord != null">
+            <choose>
+                <when test="searchType == 'title' ">
+                    AND bo.title LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <when test="searchType == 'answerContent' ">
+                    AND bo.answer_content LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <otherwise>
+                    AND (bo.title LIKE CONCAT('%',#{searchWord}, '%') or bo.answer_content LIKE CONCAT('%',#{searchWord}, '%') )
+                </otherwise>
+            </choose>
+        </if>
+    </select>
+
+    <select id="find" parameterType="map" resultType="com.laidback.model.BbsOnetoone">
+        SELECT
+        bo.*
+        , u.name as userName
+        , u.*
+        FROM bbs_onetoone bo
+        LEFT OUTER JOIN member u ON bo.user_seq = u.seq
+        WHERE 1 = 1 and bo.delete_datetime is null
+        <if test="qnaType != null">
+            AND bo.qna_type IN
+            <foreach item="qnaVal" collection="qnaType" separator="," open="(" close=")">
+                #{qnaVal}
+            </foreach>
+        </if>
+        <if test="startDate != null">
+            AND to_char(bo.create_datetime,'YYYY-MM-DD') <![CDATA[ >= ]]> #{startDate}
+        </if>
+        <if test="endDate != null">
+            AND to_char(bo.create_datetime,'YYYY-MM-DD') <![CDATA[ <= ]]> #{endDate}
+        </if>
+        <if test="searchWord != null">
+            <choose>
+                <when test="searchType == 'title' ">
+                    AND bo.title LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <when test="searchType == 'answerContent' ">
+                    AND bo.answer_content LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <otherwise>
+                    AND (bo.title LIKE CONCAT('%',#{searchWord}, '%') or bo.answer_content LIKE CONCAT('%',#{searchWord}, '%') )
+                </otherwise>
+            </choose>
+        </if>
+        <choose>
+            <when test="order == 0">
+                ORDER BY ${sort} ASC
+            </when>
+            <when test="order == 1">
+                ORDER BY ${sort} DESC
+            </when>
+        </choose>
+        <if test="offset != null and count != null">
+            LIMIT ${count} OFFSET ${offset}
+        </if>
+    </select>
+
+    <select id="findByOnetoone" parameterType="map" resultType="com.laidback.model.BbsOnetoone">
+        SELECT
+            bo.*
+          , u.name AS userName
+          FROM bbs_onetoone bo
+            LEFT OUTER JOIN member u ON bo.user_seq = u.seq
+         WHERE 1 = 1
+           AND bo.seq = #{seq}
+    </select>
+
+    <select id="repoByOnetoone" parameterType="map" resultType="com.laidback.model.BbsOnetoone">
+        SELECT
+        bo.*
+        , u.name as userName
+        FROM bbs_onetoone bo
+        LEFT OUTER JOIN member u ON bo.user_seq = u.seq
+        WHERE bo.delete_datetime is null
+        AND bo.user_seq = #{userSeq}
+        <choose>
+            <when test="order == 0">
+                ORDER BY ${sort} ASC
+            </when>
+            <when test="order == 1">
+                ORDER BY ${sort} DESC
+            </when>
+        </choose>
+        <if test="offset != null and count != null">
+            LIMIT ${count} OFFSET ${offset}
+        </if>
+    </select>
+
+    <select id="onetooneByCount" parameterType="map" resultType="int">
+        SELECT
+            COUNT(*)
+        FROM bbs_onetoone
+        WHERE delete_datetime is null
+        AND user_seq = #{userSeq}
+    </select>
+
+    <select id="findByMain" resultType="com.laidback.model.BbsOnetoone">
+        SELECT
+            *
+          FROM bbs_onetoone
+         WHERE 1 = 1
+         ORDER By create_datetime
+         LIMIT 5
+	</select>
+
+    <select id="getExeclDownList" parameterType="map" resultType="com.laidback.model.BbsOnetoone">
+        SELECT
+        bo.*
+        , u.name as userName
+        , u.*
+        FROM bbs_onetoone bo
+        LEFT OUTER JOIN member u ON bo.user_seq = u.seq
+        WHERE 1 = 1
+        <if test="qnaType != null">
+            AND bo.qna_type IN
+            <foreach item="qnaVal" collection="qnaType" separator="," open="(" close=")">
+                #{qnaVal}
+            </foreach>
+        </if>
+        <if test="list != null">
+            AND bo.seq IN
+            <foreach item="seq" collection="list" separator="," open="(" close=")">
+                #{seq}
+            </foreach>
+        </if>
+        <choose>
+            <when test="order == 0">
+                ORDER BY ${sort} ASC
+            </when>
+            <when test="order == 1">
+                ORDER BY ${sort} DESC
+            </when>
+        </choose>
+    </select>
+
+
+
+</mapper>

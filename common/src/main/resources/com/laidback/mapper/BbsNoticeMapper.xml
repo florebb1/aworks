@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.laidback.mapper.BbsNoticeMapper">
+    <select id="count" parameterType="map" resultType="int">
+        SELECT
+            COUNT(*)
+          FROM bbs_notice
+         WHERE 1 = 1
+           AND delete_datetime is null
+        <if test="startDate != null">
+            AND to_char(create_datetime,'YYYY-MM-DD') <![CDATA[ >= ]]> #{startDate}
+        </if>
+        <if test="endDate != null">
+            AND to_char(create_datetime,'YYYY-MM-DD') <![CDATA[ <= ]]> #{endDate}
+        </if>
+        <if test="searchWord != null">
+            <choose>
+                <when test="searchType == 'title' ">
+                    AND title LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <when test="searchType == 'writer' ">
+                    AND writer LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <otherwise>
+                    AND (title LIKE CONCAT('%',#{searchWord}, '%') or writer LIKE CONCAT('%',#{searchWord}, '%') )
+                </otherwise>
+            </choose>
+        </if>
+
+    </select>
+
+    <select id="find" parameterType="map" resultType="com.laidback.model.BbsNotice">
+        SELECT *
+        FROM bbs_notice
+        WHERE 1 = 1
+        AND delete_datetime is null
+        <if test="startDate != null">
+            AND to_char(create_datetime,'YYYY-MM-DD') <![CDATA[ >= ]]> #{startDate}
+        </if>
+        <if test="endDate != null">
+            AND to_char(create_datetime,'YYYY-MM-DD') <![CDATA[ <= ]]> #{endDate}
+        </if>
+        <if test="searchWord != null">
+            <choose>
+                <when test="searchType == 'title' ">
+                    AND title LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <when test="searchType == 'writer' ">
+                    AND writer LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <otherwise>
+                    AND (title LIKE CONCAT('%',#{searchWord}, '%') or writer LIKE CONCAT('%',#{searchWord}, '%') )
+                </otherwise>
+            </choose>
+        </if>
+        <choose>
+            <when test="order == 0">
+                ORDER BY ${sort} ASC
+            </when>
+            <when test="order == 1">
+                ORDER BY ${sort} DESC
+            </when>
+        </choose>
+        <if test="offset != null and count != null">
+            LIMIT ${count} OFFSET ${offset}
+        </if>
+    </select>
+
+    <select id="detail" parameterType="map" resultType="com.laidback.model.BbsNotice">
+        SELECT *
+        ,(SELECT seq FROM bbs_notice WHERE <![CDATA[seq < #{noticeId}]]> ORDER BY seq DESC LIMIT 1) AS pre
+        ,(SELECT title FROM bbs_notice WHERE <![CDATA[seq < #{noticeId}]]> ORDER BY seq DESC LIMIT 1) AS preTitle
+        ,(SELECT seq FROM bbs_notice WHERE <![CDATA[seq > #{noticeId}]]> ORDER BY seq ASC LIMIT 1) AS nex
+        ,(SELECT title FROM bbs_notice WHERE <![CDATA[seq > #{noticeId}]]> ORDER BY seq ASC LIMIT 1) AS nexTitle
+        FROM bbs_notice
+        WHERE seq = #{noticeId};
+    </select>
+
+    <select id="findByNotice" parameterType="map" resultType="com.laidback.model.BbsNotice">
+        SELECT
+            *
+          FROM bbs_notice
+         WHERE seq = #{seq}
+    </select>
+
+    <!-- 공지 등록 -->
+    <insert id="saveForNotice" parameterType="com.laidback.model.BbsNotice" useGeneratedKeys="true" keyProperty="seq">
+        INSERT INTO bbs_notice (
+            writer
+          , title
+          , content
+          , view_cnt
+          , create_datetime
+          , update_datetime
+          , delete_datetime
+        ) VALUES (
+            #{writer}
+          , #{title}
+          , #{content}
+          , 0
+          , NOW()
+          , null
+          , null
+        )
+    </insert>
+
+    <select id="getExeclDownList" parameterType="map" resultType="com.laidback.model.BbsNotice">
+        SELECT
+            *
+          FROM bbs_notice
+         WHERE 1 = 1
+           AND delete_datetime is null
+        <if test="noticeList != null">
+            AND seq IN
+            <foreach item="seq" collection="noticeList" separator="," open="(" close=")">
+                #{seq}
+            </foreach>
+        </if>
+        ORDER BY create_datetime DESC
+    </select>
+
+</mapper>

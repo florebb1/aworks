@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.laidback.mapper.ComLicenseUseMapper">
+    <select id="getMacAddress" parameterType="map" resultType="int">
+        SELECT
+        COUNT(*)
+        FROM com_license_use clu
+        LEFT JOIN com_license cl on clu.com_license_seq = cl.seq
+        LEFT JOIN com_contract ct on cl.com_contract_seq = ct.seq
+        LEFT JOIN company c on ct.com_seq = c.seq
+        WHERE (mac_address = #{macAddress} or mac_address = #{macAddress2})
+        AND to_char(ct.contract_end,'YYYY-MM-DD') <![CDATA[ >= ]]> #{endDate}
+        AND clu.status = 0
+        AND cl.license_status = 0
+    </select>
+    <select id="dupleName" parameterType="map" resultType="int">
+        select count(*) from com_license_use where com_contract_seq = #{comContractSeq} and license_name = #{licenseName}
+    </select>
+</mapper>

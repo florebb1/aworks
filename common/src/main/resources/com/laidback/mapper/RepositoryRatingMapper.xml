@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.laidback.mapper.RepositoryRatingMapper">
+    <resultMap id="repositoryRatingResultMap" type="com.laidback.model.RepositoryRating">
+        <id property="id" column="id"/>
+    </resultMap>
+    <select id="getDuple" parameterType="map" resultType="com.laidback.model.RepositoryRating">
+        SELECT
+          *
+        FROM repository_rating
+        WHERE user_seq = #{userSeq}
+        AND repository_seq = #{repositorySeq}
+    </select>
+
+    <select id="count" parameterType="map" resultType="int">
+        SELECT
+          COUNT(*)
+        FROM repository_rating
+        WHERE user_seq = #{userSeq}
+        AND repository_seq = #{marketId}
+    </select>
+
+    <select id="findBySeq" parameterType="map" resultType="int">
+        SELECT
+          seq
+        FROM repository_rating
+        WHERE user_seq = #{userSeq}
+        AND repository_seq = #{marketId}
+    </select>
+
+    <select id="findByRating" parameterType="map" resultType="double">
+        SELECT
+          rating
+        FROM repository_rating
+        WHERE user_seq = #{userSeq}
+        AND repository_seq = #{marketId}
+    </select>
+</mapper>

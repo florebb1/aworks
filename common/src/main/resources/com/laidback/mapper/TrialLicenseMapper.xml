@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.laidback.mapper.TrialLicenseMapper">
+    <resultMap id="repositoryLicenseResultMap" type="com.laidback.model.TrialLicense">
+        <id property="id" column="id"/>
+    </resultMap>
+
+    <select id="find" parameterType="map" resultType="com.laidback.model.TrialLicense">
+        SELECT
+            *
+        FROM trial_license
+        WHERE 1=1
+            AND to_char(end_date,'YYYY-MM-DD') <![CDATA[ > ]]> #{now}
+            AND trial_seq = #{trialUserSeq}
+            AND status = 1
+    </select>
+
+    <select id="findByCount" parameterType="map" resultType="int">
+        SELECT
+            COUNT(*)
+        FROM trial_license
+        WHERE 1=1
+            AND to_char(end_date,'YYYY-MM-DD') <![CDATA[ > ]]> #{now}
+            AND trial_seq = #{trialUserSeq}
+            AND status = 1
+    </select>
+
+    <select id="findBySeq" parameterType="map" resultType="int">
+        SELECT
+            seq
+        FROM trial_license
+        WHERE 1=1
+            AND trial_seq = #{trialUserSeq}
+    </select>
+
+    <select id="count" parameterType="map" resultType="int">
+        SELECT
+            COUNT(*)
+        FROM trial_license
+        WHERE 1=1
+            AND trial_seq = #{trialUserSeq}
+    </select>
+    <select id="findByLicense" parameterType="map" resultType="com.laidback.model.TrialLicense">
+        SELECT
+            *
+        FROM trial_license
+        WHERE 1=1
+            AND trial_seq = #{trialUserSeq}
+    </select>
+</mapper>

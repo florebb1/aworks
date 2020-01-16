@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.laidback.mapper.VersionManageMapper">
+    <select id="count" parameterType="map" resultType="int">
+        SELECT COUNT(*)
+        FROM version_manage
+        WHERE 1=1
+        AND delete_datetime is null
+        <if test="startDate != null">
+            AND to_char(create_datetime,'YYYY-MM-DD') <![CDATA[ >= ]]> #{startDate}
+        </if>
+        <if test="endDate != null">
+            AND to_char(create_datetime,'YYYY-MM-DD') <![CDATA[ <= ]]> #{endDate}
+        </if>
+
+    </select>
+
+    <select id="find" parameterType="map" resultType="com.laidback.model.VersionManage">
+        SELECT *
+        FROM version_manage
+        WHERE 1=1
+        AND delete_datetime is null
+        <if test="startDate != null">
+            AND to_char(create_datetime,'YYYY-MM-DD') <![CDATA[ >= ]]> #{startDate}
+            AND to_char(create_datetime,'YYYY-MM-DD') <![CDATA[ < ]]> #{endDate}
+        </if>
+
+        <choose>
+            <when test="order == 0">
+                ORDER BY ${sort} ASC
+            </when>
+            <when test="order == 1">
+                ORDER BY ${sort} DESC
+            </when>
+        </choose>
+        <if test="offset != null and count != null">
+            LIMIT ${count} OFFSET ${offset}
+        </if>
+    </select>
+    <select id="getLast" parameterType="map" resultType="com.laidback.model.VersionManage">
+        select * from version_manage where version_type = #{versionType} AND delete_datetime is null order by update_datetime desc , seq desc limit 1
+    </select>
+
+    <select id="get32" parameterType="int" resultType="com.laidback.model.VersionManage">
+        select * from version_manage
+        where version_type = #{version}
+        AND bit_type = #{bit}
+        AND delete_datetime is null
+        order by update_datetime desc , seq desc limit 1
+    </select>
+
+    <select id="get32Count" parameterType="map" resultType="int">
+        select COUNT(*) from version_manage
+        where version_type = #{version}
+        AND bit_type = #{bit}
+        AND delete_datetime is null
+    </select>
+
+    <select id="get64" parameterType="map" resultType="com.laidback.model.VersionManage">
+        select * from version_manage
+        where version_type = #{version}
+        AND bit_type = #{bit}
+        AND delete_datetime is null
+        order by update_datetime desc , seq desc limit 1
+    </select>
+
+    <select id="get64Count" parameterType="map" resultType="int">
+        select COUNT(*) from version_manage
+        where version_type = #{version}
+        AND bit_type = #{bit}
+        AND delete_datetime is null
+    </select>
+
+    <select id="getStudio32" resultType="com.laidback.model.VersionManage">
+        select * from version_manage
+        where version_type = 1
+        AND bit_type = 0
+        AND delete_datetime is null
+        order by update_datetime desc , seq desc limit 1
+    </select>
+    <select id="getMini32" resultType="com.laidback.model.VersionManage">
+        select * from version_manage
+        where version_type = 0
+        AND bit_type = 0
+        AND delete_datetime is null
+        order by update_datetime desc , seq desc limit 1
+    </select>
+    <select id="getStudio64" resultType="com.laidback.model.VersionManage">
+        select * from version_manage
+        where version_type = 1
+        AND bit_type = 1
+        AND delete_datetime is null
+        order by update_datetime desc , seq desc limit 1
+    </select>
+    <select id="getMini64" resultType="com.laidback.model.VersionManage">
+        select * from version_manage
+        where version_type = 0
+        AND bit_type = 1
+        AND delete_datetime is null
+        order by update_datetime desc , seq desc limit 1
+    </select>
+
+    <select id="getLinux" resultType="com.laidback.model.VersionManage">
+        select * from version_manage
+        where version_type = 3
+        AND bit_type = 0
+        AND delete_datetime is null
+        order by update_datetime desc , seq desc limit 1
+    </select>
+
+    <select id="getWindows" resultType="com.laidback.model.VersionManage">
+        select * from version_manage
+        where version_type = 3
+        AND bit_type = 1
+        AND delete_datetime is null
+        order by update_datetime desc , seq desc limit 1
+    </select>
+</mapper>

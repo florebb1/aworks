@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.laidback.mapper.RepositoryRecommMapper">
+    <resultMap id="repositoryRecommResultMap" type="com.laidback.model.RepositoryRecomm">
+        <id property="id" column="id"/>
+    </resultMap>
+
+    <select id="count" resultType="int">
+        SELECT COUNT(*) as totalCount
+        FROM repository_recomm
+    </select>
+
+    <!-- 레포지토리 추천목록 카운트 -->
+    <select id="countByRecomm" parameterType="map" resultType="int">
+        SELECT
+            count(*)
+          FROM repository_recomm rc
+         WHERE 1 = 1
+    </select>
+
+    <!-- 레포지토리 추천목록 조회 -->
+    <select id="findByRecomm" parameterType="map" resultType="com.laidback.model.Repository">
+        SELECT
+            r.*
+          , rc.seq as recommSeq
+          , (SELECT ARRAY_TO_STRING(array_agg(rp.process_type),',') FROM repository_process rp WHERE rp.repository_seq = r.seq) AS processType
+          , (select count(*) from repository_download rd where rd.seq = rc.repository_seq) as downloadCnt
+          , (SELECT COUNT(*) FROM repository_qna rq WHERE rq.repository_seq = rc.repository_seq) as qnaCnt
+          , (select count(*) from repository_like rl where rl.repository_seq = rc.repository_seq) as likeCnt
+          , (select ROUND(cast(AVG(rr.rating) as numeric),1) from repository_rating rr where rr.repository_seq = r.seq) as ratingAvg
+          , (select count(*) from repository_review rr where rr.repository_seq = rc.repository_seq) as review
+          FROM repository_recomm rc
+            LEFT OUTER JOIN repository r ON rc.repository_seq = r.seq
+         WHERE 1 = 1
+        <choose>
+            <when test="order == 0">
+                ORDER BY ${sort} ASC
+            </when>
+            <when test="order == 1">
+                ORDER BY ${sort} DESC
+            </when>
+        </choose>
+        <if test="offset != null and count != null">
+            LIMIT ${count} OFFSET ${offset}
+        </if>
+    </select>
+
+    <!-- 레포지토리 추천 아이템 상세 조회 -->
+    <select id="findByRecommInfo" parameterType="map" resultType="com.laidback.model.RepositoryRecomm">
+        SELECT
+            rc.*
+          FROM repository_recomm rc
+         WHERE 1 = 1
+           AND rc.seq = #{seq}
+    </select>
+</mapper>

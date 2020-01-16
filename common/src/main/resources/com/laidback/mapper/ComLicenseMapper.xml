@@ -1,0 +1,402 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.laidback.mapper.ComLicenseMapper">
+    <select id="count" parameterType="map" resultType="int">
+        SELECT
+            COUNT(*)
+          FROM com_license cl
+            LEFT OUTER JOIN com_contract com ON cl.com_contract_seq = com.seq
+         WHERE 1 = 1
+           AND cl.delete_datetime is null and com.delete_datetime is null
+        <if test="comSeq != null">
+            AND com.com_seq = #{comSeq}
+        </if>
+        <if test="userSeq != null">
+            AND com.user_seq = #{userSeq}
+        </if>
+        <if test="startDate != null">
+            AND to_char(com.contract_start,'YYYY-MM-DD') <![CDATA[ >= ]]> #{startDate}
+        </if>
+        <if test="endDate != null">
+            AND to_char(com.contract_end,'YYYY-MM-DD') <![CDATA[ <= ]]> #{endDate}
+        </if>
+        <if test="searchWord != null and searchWord != ''">
+            AND ( com.contract_number LIKE CONCAT('%',#{searchWord}, '%') )
+        </if>
+        <if test="licenseType != null">
+            AND license_type = #{licenseType}
+        </if>
+        <if test="licenseStatus != null">
+            <choose>
+                <when test="licenseStatus == 1 ">
+                    AND license_status = #{licenseStatus}
+                </when>
+                <when test="licenseStatus == 2 ">
+                    AND to_char(com.contract_end,'YYYY-MM-DD') <![CDATA[ < ]]> #{today}
+                </when>
+                <when test="licenseStatus == 3 ">
+                    AND coalesce(count_unattended,0) - coalesce((select sum(count_unattended) from com_license_use where com_license_seq = cl.seq group by com_license_seq),0) <![CDATA[ <= ]]> 0
+                    AND coalesce(count_attended,0) - coalesce((select sum(count_attended) from com_license_use where com_license_seq = cl.seq group by com_license_seq),0) <![CDATA[ <= ]]> 0
+                    AND coalesce(count_developer,0) - coalesce((select sum(count_developer) from com_license_use where com_license_seq = cl.seq group by com_license_seq),0) <![CDATA[ <= ]]> 0
+                    AND coalesce(count_workcenter,0) - coalesce((select sum(count_workcenter) from com_license_use where com_license_seq = cl.seq group by com_license_seq),0) <![CDATA[ <= ]]> 0
+                    AND to_char(com.contract_end,'YYYY-MM-DD') <![CDATA[ >= ]]> #{today}
+                </when>
+                <when test="licenseStatus == 0 ">
+                    AND license_status = #{licenseStatus} AND to_char(com.contract_end,'YYYY-MM-DD') <![CDATA[ >= ]]> #{today}
+                    AND (
+                    coalesce(count_unattended,0) - coalesce((select sum(count_unattended) from com_license_use where com_license_seq = cl.seq group by com_license_seq),0) <![CDATA[ > ]]> 0
+                    OR coalesce(count_attended,0) - coalesce((select sum(count_attended) from com_license_use where com_license_seq = cl.seq group by com_license_seq),0) <![CDATA[ > ]]> 0
+                    OR coalesce(count_developer,0) - coalesce((select sum(count_developer) from com_license_use where com_license_seq = cl.seq group by com_license_seq),0) <![CDATA[ > ]]> 0
+                    OR coalesce(count_workcenter,0) - coalesce((select sum(count_workcenter) from com_license_use where com_license_seq = cl.seq group by com_license_seq),0) <![CDATA[ > ]]> 0
+                    )
+                </when>
+            </choose>
+
+        </if>
+        <if test="contractType != null">
+            AND contract_type = #{contractType}
+        </if>
+        <if test="subscribeType != null">
+            AND cl.subscribe_type = #{subscribeType}
+        </if>
+        <if test="contractStatus != null and contractStatus > 0">
+            <choose>
+                <when test="contractStatus == 1 ">
+                    AND to_char(com.contract_start,'YYYY-MM-DD') <![CDATA[ > ]]> #{today}
+                </when>
+                <when test="contractStatus == 2 ">
+                    AND to_char(com.contract_start,'YYYY-MM-DD') <![CDATA[ <= ]]> #{today} and to_char(com.contract_end,'YYYY-MM-DD') <![CDATA[ >= ]]> #{today}
+                </when>
+                <when test="contractStatus == 3 ">
+                    AND to_char(com.contract_end,'YYYY-MM-DD') <![CDATA[ < ]]> #{today}
+                </when>
+            </choose>
+        </if>
+        <if test="contractSeq != null">
+            AND com_contract_seq = #{contractSeq}
+        </if>
+    </select>
+
+    <select id="find" parameterType="map" resultType="com.laidback.model.ComLicense">
+        SELECT
+            cl.*
+            , com.contract_number AS contractNumber
+            , com.seq as comContractSeq
+            , com.contract_start as contractStart
+            , com.contract_end as contractEnd
+            , coalesce((select sum(count_attended) from com_license_use where com_license_seq = cl.seq group by com_license_seq),0) as countAttendedUse
+            , coalesce((select sum(count_unattended) from com_license_use where com_license_seq = cl.seq group by com_license_seq),0) as countUnAttendedUse
+            , coalesce((select sum(count_developer) from com_license_use where com_license_seq = cl.seq group by com_license_seq),0) as countStudioUse
+            , coalesce((select sum(count_workcenter) from com_license_use where com_license_seq = cl.seq group by com_license_seq),0) as countWorkcenterUse
+            , com.contract_status as contractStatus
+            ,
+            case
+            when license_status = 1 then 'A'
+            when to_char(com.contract_end,'YYYY-MM-DD') <![CDATA[ < ]]> #{today} then 'B'
+            when
+                coalesce(count_unattended,0) - coalesce((select sum(count_unattended) from com_license_use where com_license_seq = cl.seq group by com_license_seq),0) <![CDATA[ <= ]]> 0
+                AND coalesce(count_attended,0) - coalesce((select sum(count_attended) from com_license_use where com_license_seq = cl.seq group by com_license_seq),0) <![CDATA[ <= ]]> 0
+                AND coalesce(count_developer,0) - coalesce((select sum(count_developer) from com_license_use where com_license_seq = cl.seq group by com_license_seq),0) <![CDATA[ <= ]]> 0
+                AND coalesce(count_workcenter,0) - coalesce((select sum(count_workcenter) from com_license_use where com_license_seq = cl.seq group by com_license_seq),0) <![CDATA[ <= ]]> 0
+            then 'C'
+            else 'D'
+            end as strLicenseStatus
+
+            , case when to_char(com.contract_start,'YYYY-MM-DD') <![CDATA[ > ]]> #{today} then 'A'
+            when to_char(com.contract_start,'YYYY-MM-DD') <![CDATA[ <= ]]> #{today} and to_char(com.contract_end,'YYYY-MM-DD') <![CDATA[ >= ]]> #{today} then 'B'
+            when to_char(com.contract_end,'YYYY-MM-DD') <![CDATA[ < ]]> #{today} then 'C'
+            end as strStatus
+            , case when license_type = 1 then 'P'
+            when license_type = 2 then 'C'
+            else 'O'
+            end as strLicenseType
+            , case when contract_type = 1 then 'Pilot'
+            when contract_type = 2 then 'PoC'
+            else '본사업'
+            end as strContractType
+          FROM com_license cl
+        LEFT OUTER JOIN com_contract com ON cl.com_contract_seq = com.seq
+         WHERE 1 = 1
+           AND cl.delete_datetime is null and com.delete_datetime is null
+        <if test="comSeq != null">
+            AND com.com_seq = #{comSeq}
+        </if>
+        <if test="userSeq != null">
+            AND com.user_seq = #{userSeq}
+        </if>
+        <if test="startDate != null">
+            AND to_char(com.contract_start,'YYYY-MM-DD') <![CDATA[ >= ]]> #{startDate}
+        </if>
+        <if test="endDate != null">
+            AND to_char(com.contract_end,'YYYY-MM-DD') <![CDATA[ <= ]]> #{endDate}
+        </if>
+        <if test="searchWord != null and searchWord != ''">
+            AND ( com.contract_number LIKE CONCAT('%',#{searchWord}, '%') )
+        </if>
+        <if test="licenseType != null">
+            AND license_type = #{licenseType}
+        </if>
+        <if test="licenseStatus != null">
+            <choose>
+                <when test="licenseStatus == 1 ">
+                    AND license_status = #{licenseStatus}
+                </when>
+                <when test="licenseStatus == 2 ">
+                    AND to_char(com.contract_end,'YYYY-MM-DD') <![CDATA[ < ]]> #{today}
+                </when>
+                <when test="licenseStatus == 3 ">
+                    AND coalesce(count_unattended,0) - coalesce((select sum(count_unattended) from com_license_use where com_license_seq = cl.seq group by com_license_seq),0) <![CDATA[ <= ]]> 0
+                    AND coalesce(count_attended,0) - coalesce((select sum(count_attended) from com_license_use where com_license_seq = cl.seq group by com_license_seq),0) <![CDATA[ <= ]]> 0
+                    AND coalesce(count_developer,0) - coalesce((select sum(count_developer) from com_license_use where com_license_seq = cl.seq group by com_license_seq),0) <![CDATA[ <= ]]> 0
+                    AND coalesce(count_workcenter,0) - coalesce((select sum(count_workcenter) from com_license_use where com_license_seq = cl.seq group by com_license_seq),0) <![CDATA[ <= ]]> 0
+                    AND to_char(com.contract_end,'YYYY-MM-DD') <![CDATA[ >= ]]> #{today}
+                </when>
+                <when test="licenseStatus == 0 ">
+                    AND license_status = #{licenseStatus} AND to_char(com.contract_end,'YYYY-MM-DD') <![CDATA[ >= ]]> #{today}
+                    AND (
+                    coalesce(count_unattended,0) - coalesce((select sum(count_unattended) from com_license_use where com_license_seq = cl.seq group by com_license_seq),0) <![CDATA[ > ]]> 0
+                    OR coalesce(count_attended,0) - coalesce((select sum(count_attended) from com_license_use where com_license_seq = cl.seq group by com_license_seq),0) <![CDATA[ > ]]> 0
+                    OR coalesce(count_developer,0) - coalesce((select sum(count_developer) from com_license_use where com_license_seq = cl.seq group by com_license_seq),0) <![CDATA[ > ]]> 0
+                    OR coalesce(count_workcenter,0) - coalesce((select sum(count_workcenter) from com_license_use where com_license_seq = cl.seq group by com_license_seq),0) <![CDATA[ > ]]> 0
+                    )
+                </when>
+            </choose>
+        </if>
+        <if test="contractType != null">
+            AND contract_type = #{contractType}
+        </if>
+        <if test="subscribeType != null">
+            AND cl.subscribe_type = #{subscribeType}
+        </if>
+        <if test="contractStatus != null and contractStatus > 0">
+            <choose>
+                <when test="contractStatus == 1 ">
+                    AND to_char(com.contract_start,'YYYY-MM-DD') <![CDATA[ > ]]> #{today}
+                </when>
+                <when test="contractStatus == 2 ">
+                    AND to_char(com.contract_start,'YYYY-MM-DD') <![CDATA[ <= ]]> #{today} and to_char(com.contract_end,'YYYY-MM-DD') <![CDATA[ >= ]]> #{today}
+                </when>
+                <when test="contractStatus == 3 ">
+                    AND to_char(com.contract_end,'YYYY-MM-DD') <![CDATA[ < ]]> #{today}
+                </when>
+            </choose>
+        </if>
+        <if test="contractSeq != null">
+            AND com_contract_seq = #{contractSeq}
+        </if>
+        <choose>
+            <when test="order == 0 and sort == 'contract_number' ">
+                ORDER BY contract_number collate "C" ASC, cl.seq ASC
+            </when>
+            <when test="order == 1 and sort == 'contract_number' ">
+                ORDER BY contract_number collate "C" DESC, cl.seq DESC
+            </when>
+            <when test="order == 0 and sort == 'license_type' ">
+                ORDER BY strLicenseType  ASC, strContractType ASC, cl.seq ASC
+            </when>
+            <when test="order == 1 and sort == 'license_type' ">
+                ORDER BY strLicenseType  DESC, strContractType DESC, cl.seq DESC
+            </when>
+            <when test="order == 0 and sort == 'contract_start' ">
+                ORDER BY contract_start ASC, contract_end ASC, cl.seq ASC
+            </when>
+            <when test="order == 1 and sort == 'contract_start' ">
+                ORDER BY contract_start DESC, contract_end DESC, cl.seq DESC
+            </when>
+            <when test="order == 0 and sort == 'count_unattended' ">
+                ORDER BY NULLIF(count_unattended,0) ASC NULLS LAST, cl.seq ASC
+            </when>
+            <when test="order == 1 and sort == 'count_unattended' ">
+                ORDER BY NULLIF(count_unattended,0) DESC NULLS LAST, cl.seq DESC
+            </when>
+            <when test="order == 0 and sort == 'count_attended' ">
+                ORDER BY NULLIF(count_attended,0) ASC NULLS LAST, cl.seq ASC
+            </when>
+            <when test="order == 1 and sort == 'count_attended' ">
+                ORDER BY NULLIF(count_attended,0) DESC NULLS LAST, cl.seq DESC
+            </when>
+            <when test="order == 0 and sort == 'count_studio' ">
+                ORDER BY NULLIF(count_studio,0) ASC NULLS LAST, cl.seq ASC
+            </when>
+            <when test="order == 1 and sort == 'count_studio' ">
+                ORDER BY NULLIF(count_studio,0) DESC NULLS LAST, cl.seq DESC
+            </when>
+            <when test="order == 0 and sort == 'count_workcenter' ">
+                ORDER BY NULLIF(count_workcenter,0) ASC NULLS LAST, cl.seq ASC
+            </when>
+            <when test="order == 1 and sort == 'count_workcenter' ">
+                ORDER BY NULLIF(count_workcenter,0) DESC NULLS LAST, cl.seq DESC
+            </when>
+            <when test="order == 0 and sort == 'contract_status' ">
+                ORDER BY strStatus ASC, cl.seq ASC
+            </when>
+            <when test="order == 1 and sort == 'contract_status' ">
+                ORDER BY strStatus DESC, cl.seq DESC
+            </when>
+            <when test="order == 0 and sort == 'license_status' ">
+                ORDER BY strLicenseStatus ASC, cl.seq ASC
+            </when>
+            <when test="order == 1 and sort == 'license_status' ">
+                ORDER BY strLicenseStatus DESC, cl.seq DESC
+            </when>
+            <otherwise>
+                ORDER BY cl.seq DESC
+            </otherwise>
+        </choose>
+        <if test="offset != null and count != null">
+            LIMIT ${count} OFFSET ${offset}
+        </if>
+    </select>
+
+    <select id="getComLicense" parameterType="int" resultType="com.laidback.model.ComLicense">
+        SELECT
+            cl.*
+          , cl.start_date as startDateStr
+          , cl.end_date as endDateStr
+          , extract(epoch FROM cl.create_datetime) as createDatetimeStr
+          , coalesce((select sum(count_attended) from com_license_use where com_license_seq = cl.seq group by com_license_seq),0) as countAttendedUse
+          , coalesce((select sum(count_unattended) from com_license_use where com_license_seq = cl.seq group by com_license_seq),0) as countUnAttendedUse
+          , coalesce((select sum(count_developer) from com_license_use where com_license_seq = cl.seq group by com_license_seq),0) as countStudioUse
+          , coalesce((select sum(count_workcenter) from com_license_use where com_license_seq = cl.seq group by com_license_seq),0) as countWorkcenterUse
+          , com.contract_number AS contractNumber
+          , com.seq as comContractSeq
+          FROM com_license cl
+            LEFT OUTER JOIN com_contract com ON cl.com_contract_seq = com.seq
+         WHERE cl.seq = #{seq}
+    </select>
+
+    <select id="getComLicenseUses" parameterType="map" resultType="com.laidback.model.ComLicenseUse">
+        SELECT * FROM com_license_use WHERE com_license_seq = #{seq} order by seq desc LIMIT ${row} OFFSET ${start}
+    </select>
+    <select id="getComLicenseUsesCount" parameterType="int" resultType="int">
+        SELECT count(*) FROM com_license_use WHERE com_license_seq = #{seq}
+    </select>
+
+    <select id="getExeclDownList" parameterType="map" resultType="com.laidback.model.ComLicense">
+        <!--SELECT-->
+            <!--cl.*-->
+        <!--, com.com_contract_code AS comContractCode-->
+        <!--, com.seq as comContractSeq-->
+        <!--, coalesce((select sum(count_attended) from com_license_use where com_license_seq = cl.seq group by com_license_seq),0) as countAttendedUse-->
+        <!--, coalesce((select sum(count_unattended) from com_license_use where com_license_seq = cl.seq group by com_license_seq),0) as countUnAttendedUse-->
+        <!--, coalesce((select sum(count_developer) from com_license_use where com_license_seq = cl.seq group by com_license_seq),0) as countDeveloperUse-->
+          <!--FROM com_license cl-->
+        <!--LEFT OUTER JOIN com_contract com ON cl.com_contract_seq = com.seq-->
+         <!--WHERE 1 = 1-->
+        <!--<if test="licenseList != null">-->
+            <!--AND cl.seq IN-->
+            <!--<foreach item="seq" collection="licenseList" separator="," open="(" close=")">-->
+                <!--#{seq}-->
+            <!--</foreach>-->
+        <!--</if>-->
+         <!--ORDER BY cl.create_datetime DESC-->
+        select
+        cl.*
+        , com.contract_number AS contractNumber
+        , com.seq as comContractSeq
+        , com.contract_start as contractStart
+        , com.contract_end as contractEnd
+        , u.seq as userSeq
+        , u.name as userName
+        , u.login_id as loginId
+        , com.contract_ict_name as contractIctName
+        , coalesce((select sum(count_attended) from com_license_use where com_license_seq = cl.seq group by com_license_seq),0) as countAttendedUse
+        , coalesce((select sum(count_unattended) from com_license_use where com_license_seq = cl.seq group by com_license_seq),0) as countUnAttendedUse
+        , coalesce((select sum(count_developer) from com_license_use where com_license_seq = cl.seq group by com_license_seq),0) as countStudioUse
+        , coalesce((select sum(count_workcenter) from com_license_use where com_license_seq = cl.seq group by com_license_seq),0) as countWorkcenterUse
+        , com.contract_status as contractStatus
+        , case when to_char(com.contract_start,'YYYY-MM-DD') <![CDATA[ > ]]> #{today} then 'A'
+        when to_char(com.contract_start,'YYYY-MM-DD') <![CDATA[ <= ]]> #{today} and to_char(com.contract_end,'YYYY-MM-DD') <![CDATA[ >= ]]> #{today} then 'B'
+        when to_char(com.contract_end,'YYYY-MM-DD') <![CDATA[ < ]]> #{today} then 'C'
+        end as strStatus
+        , case when license_type = 1 then 'P'
+        when license_type = 2 then 'C'
+        else 'O'
+        end as strLicenseType
+        , case when contract_type = 1 then 'Pilot'
+        when contract_type = 2 then 'PoC'
+        else '본사업'
+        end as strContractType
+        FROM com_license cl
+        LEFT OUTER JOIN com_contract com ON cl.com_contract_seq = com.seq
+        LEFT OUTER JOIN member u ON com.user_seq = u.seq
+        where 1=1 and cl.delete_datetime is null
+        <if test="contractList != null">
+          AND cl.com_contract_seq IN
+            <foreach item="seq" collection="contractList" separator="," open="(" close=")">
+              #{seq}
+            </foreach>
+        </if>
+        <if test="licenseList != null">
+            AND cl.seq IN
+            <foreach item="seq" collection="licenseList" separator="," open="(" close=")">
+                #{seq}
+            </foreach>
+        </if>
+        <choose>
+            <when test="order == 0 and sort == 'contract_number' ">
+                ORDER BY contract_number collate "C" ASC, cl.seq ASC
+            </when>
+            <when test="order == 1 and sort == 'contract_number' ">
+                ORDER BY contract_number collate "C" DESC, cl.seq DESC
+            </when>
+            <when test="order == 0 and sort == 'license_type' ">
+                ORDER BY strLicenseType  ASC, strContractType ASC, cl.seq ASC
+            </when>
+            <when test="order == 1 and sort == 'license_type' ">
+                ORDER BY strLicenseType  DESC, strContractType DESC, cl.seq DESC
+            </when>
+            <when test="order == 0 and sort == 'contract_start' ">
+                ORDER BY contract_start ASC, contract_end ASC, cl.seq ASC
+            </when>
+            <when test="order == 1 and sort == 'contract_start' ">
+                ORDER BY contract_start DESC, contract_end DESC, cl.seq DESC
+            </when>
+            <when test="order == 0 and sort == 'count_unattended' ">
+                ORDER BY NULLIF(count_unattended,0) ASC NULLS LAST, cl.seq ASC
+            </when>
+            <when test="order == 1 and sort == 'count_unattended' ">
+                ORDER BY NULLIF(count_unattended,0) DESC NULLS LAST, cl.seq DESC
+            </when>
+            <when test="order == 0 and sort == 'count_attended' ">
+                ORDER BY NULLIF(count_attended,0) ASC NULLS LAST, cl.seq ASC
+            </when>
+            <when test="order == 1 and sort == 'count_attended' ">
+                ORDER BY NULLIF(count_attended,0) DESC NULLS LAST, cl.seq DESC
+            </when>
+            <when test="order == 0 and sort == 'count_studio' ">
+                ORDER BY NULLIF(count_studio,0) ASC NULLS LAST, cl.seq ASC
+            </when>
+            <when test="order == 1 and sort == 'count_studio' ">
+                ORDER BY NULLIF(count_studio,0) DESC NULLS LAST, cl.seq DESC
+            </when>
+            <when test="order == 0 and sort == 'count_workcenter' ">
+                ORDER BY NULLIF(count_workcenter,0) ASC NULLS LAST, cl.seq ASC
+            </when>
+            <when test="order == 1 and sort == 'count_workcenter' ">
+                ORDER BY NULLIF(count_workcenter,0) DESC NULLS LAST, cl.seq DESC
+            </when>
+            <when test="order == 0 and sort == 'contract_status' ">
+                ORDER BY strStatus ASC, cl.seq ASC
+            </when>
+            <when test="order == 1 and sort == 'contract_status' ">
+                ORDER BY strStatus DESC, cl.seq DESC
+            </when>
+            <when test="order == 0 and sort == 'license_status' ">
+                ORDER BY license_status ASC, cl.seq ASC
+            </when>
+            <when test="order == 1 and sort == 'license_status' ">
+                ORDER BY license_status DESC, cl.seq DESC
+            </when>
+            <otherwise>
+                ORDER BY cl.seq DESC
+            </otherwise>
+
+        </choose>
+    </select>
+    <select id="getComLicenseUsesTotal" parameterType="int" resultType="com.laidback.model.ComLicenseUse">
+        SELECT * FROM com_license_use WHERE com_license_seq = #{seq} order by seq desc
+    </select>
+</mapper>

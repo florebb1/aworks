@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.laidback.mapper.AdminMapper">
+    <resultMap id="adminResultMap" type="com.laidback.model.Admin">
+        <id property="id" column="id"/>
+    </resultMap>
+    <select id="count" parameterType="map" resultType="int">
+        SELECT COUNT(*)
+        FROM admin a
+        WHERE is_system != 1
+        <if test="startDate != null">
+        AND to_char(a.create_datetime,'YYYY-MM-DD') <![CDATA[ >= ]]> #{startDate}
+        AND to_char(a.create_datetime,'YYYY-MM-DD') <![CDATA[ < ]]> #{endDate}
+        </if>
+    </select>
+
+    <select id="find" parameterType="map" resultType="com.laidback.model.Admin">
+        SELECT *
+        FROM admin a
+        WHERE is_system != 1
+        <if test="startDate != null">
+        AND to_char(a.create_datetime,'YYYY-MM-DD') <![CDATA[ >= ]]> #{startDate}
+        AND to_char(a.create_datetime,'YYYY-MM-DD') <![CDATA[ < ]]> #{endDate}
+        </if>
+        <if test="offset != null and count != null">
+            LIMIT ${count} OFFSET ${offset}
+        </if>
+    </select>
+    <select id="getAdmin" parameterType="int" resultType="com.laidback.model.Admin">
+        SELECT
+          *
+        FROM admin
+        WHERE id = #{adminId}
+    </select>
+
+    <select id="findInfo" parameterType="map" resultType="com.laidback.model.Admin">
+        SELECT
+            *
+          FROM site_config
+         WHERE admin_phone = #{adminPhone}
+           AND admin_email = #{adminEmail}
+    </select>
+
+    <select id="findByAdminInfo" parameterType="String" resultType="com.laidback.model.Admin">
+        SELECT
+            *
+          FROM site_config
+         WHERE 1 = 1
+           AND admin_id = #{adminId}
+    </select>
+
+    <update id="save" parameterType="com.laidback.model.Admin">
+        UPDATE site_config
+           SET admin_phone = #{adminPhone}
+            <if test="adminPw != null">
+                , admin_pw = #{adminPw}
+            </if>
+            <if test="licenseDate1 != null">
+                , license_date1 = #{licenseDate1}
+            </if>
+            <if test="licenseDate2 != null">
+                , license_date2 = #{licenseDate2}
+            </if>
+            <if test="licenseDate3 != null">
+                , license_date3 = #{licenseDate3}
+            </if>
+             , update_datetime = #{updateDatetime}
+         WHERE seq = 1
+    </update>
+</mapper>

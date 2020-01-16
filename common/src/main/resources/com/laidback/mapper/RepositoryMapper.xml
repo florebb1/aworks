@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.laidback.mapper.RepositoryMapper">
+    <resultMap id="repositoryResultMap" type="com.laidback.model.Repository">
+        <id property="id" column="id"/>
+    </resultMap>
+
+    <select id="countBySuper" parameterType="map" resultType="int">
+        SELECT
+            count(*)
+          FROM repository r
+         WHERE 1 = 1
+           AND r.delete_datetime is null
+        <if test="recommSeqs != null">
+            AND NOT EXISTS (
+                SELECT seq FROM repository WHERE seq IN
+                <foreach item="seq" collection="recommSeqs" separator="," open="(" close=")">
+                    #{seq}
+                </foreach>
+            )
+        </if>
+        <if test="activate != null and activate == 0">
+            AND r.status = 0
+        </if>
+        <if test="startDate != null">
+            AND to_char(r.create_datetime,'YYYY-MM-DD') <![CDATA[ >= ]]> #{startDate}
+        </if>
+        <if test="endDate != null">
+            AND to_char(r.create_datetime,'YYYY-MM-DD') <![CDATA[ <= ]]> #{endDate}
+        </if>
+        <if test="searchWord != null and searchWord != ''">
+            <choose>
+                <when test="searchType == 'appName' ">
+                    AND r.app_name LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <when test="searchType == 'description' ">
+                    AND r.description LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <otherwise>
+                    AND (r.app_name LIKE CONCAT('%',#{searchWord}, '%') or r.description LIKE CONCAT('%',#{searchWord}, '%'))
+                </otherwise>
+            </choose>
+        </if>
+    </select>
+
+    <select id="findBySuper" parameterType="map" resultType="com.laidback.model.Repository">
+        SELECT
+            r.*
+          , (SELECT ARRAY_TO_STRING(array_agg(rp.process_type),',') FROM repository_process rp WHERE rp.repository_seq = r.seq) AS processType
+          , (select count(*) from repository_download rd where rd.seq = r.seq) as downloadCnt
+          , (SELECT COUNT(*) FROM repository_qna rq WHERE rq.repository_seq = r.seq) as qnaCnt
+          , (select count(*) from repository_like rl where rl.repository_seq = r.seq) as likeCnt
+          , (select ROUND(cast(AVG(rr.rating) as numeric),1) from repository_rating rr where rr.repository_seq = r.seq) as ratingAvg
+          , (select count(*) from repository_review rr where rr.repository_seq = r.seq) as review
+          FROM repository r
+         WHERE 1 = 1
+           AND r.delete_datetime is null
+        <if test="recommSeqs != null">
+            AND r.seq NOT IN
+            <foreach item="seq" collection="recommSeqs" separator="," open="(" close=")">
+                #{seq}
+            </foreach>
+        </if>
+        <if test="activate != null and activate == 0">
+            AND r.status = 0
+        </if>
+        <if test="startDate != null">
+            AND to_char(r.create_datetime,'YYYY-MM-DD') <![CDATA[ >= ]]> #{startDate}
+        </if>
+        <if test="endDate != null">
+            AND to_char(r.create_datetime,'YYYY-MM-DD') <![CDATA[ <= ]]> #{endDate}
+        </if>
+        <if test="searchWord != null and searchWord != ''">
+            <choose>
+                <when test="searchType == 'appName' ">
+                    AND r.app_name LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <when test="searchType == 'description' ">
+                    AND r.description LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <otherwise>
+                    AND (r.app_name LIKE CONCAT('%',#{searchWord}, '%') or r.description LIKE CONCAT('%',#{searchWord}, '%'))
+                </otherwise>
+            </choose>
+        </if>
+        <choose>
+            <when test="order == 0">
+                ORDER BY ${sort} ASC
+            </when>
+            <when test="order == 1">
+                ORDER BY ${sort} DESC
+            </when>
+        </choose>
+        <if test="offset != null and count != null">
+            LIMIT ${count} OFFSET ${offset}
+        </if>
+    </select>
+
+
+    <select id="count" parameterType="map" resultType="int">
+        SELECT
+        count(*)
+        FROM repository r
+        LEFT JOIN  repository_process rp ON rp.repository_seq = r.seq
+        WHERE 1 = 1
+        AND r.delete_datetime is null
+        AND  r.status = 0
+        <if test="startDate != null">
+            AND to_char(r.create_datetime,'YYYY-MM-DD') <![CDATA[ >= ]]> #{startDate}
+        </if>
+        <if test="endDate != null">
+            AND to_char(r.create_datetime,'YYYY-MM-DD') <![CDATA[ <= ]]> #{endDate}
+        </if>
+        <if test="searchWord != null and searchWord != ''">
+            <choose>
+                <when test="searchType == 'appName' ">
+                    AND r.app_name LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <when test="searchType == 'description' ">
+                    AND r.description LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <otherwise>
+                    AND (r.app_name LIKE CONCAT('%',#{searchWord}, '%') or r.description LIKE CONCAT('%',#{searchWord}, '%'))
+                </otherwise>
+            </choose>
+        </if>
+        <if test="keyword != null and keyword != ''">
+            AND CONCAT(COALESCE(r.app_name, ''), COALESCE(r.description, '')) LIKE CONCAT('%', #{keyword}, '%')
+        </if>
+        <if test="component != null">
+            AND r.app_type IN
+            <foreach item="component" collection="component" separator="," open="(" close=")">
+                #{component}
+            </foreach>
+        </if>
+        <if test="bussiness != null">
+            AND rp.process_type IN
+            <foreach item="bussiness" collection="bussiness" separator="," open="(" close=")">
+                #{bussiness}
+            </foreach>
+        </if>
+        <if test="application != null">
+            AND r.application IN
+            <foreach item="application" collection="application" separator="," open="(" close=")">
+                #{application}
+            </foreach>
+        </if>
+    </select>
+
+    <select id="find" parameterType="map" resultType="com.laidback.model.Repository">
+        SELECT
+        r.*
+        , (SELECT ARRAY_TO_STRING(array_agg(rp.process_type),',') FROM repository_process rp WHERE rp.repository_seq = r.seq) AS processType
+        , (select count(*) from repository_download rd where rd.seq = r.seq) as downloadCnt
+        , (SELECT COUNT(*) FROM repository_qna rq WHERE rq.repository_seq = r.seq) as qnaCnt
+        , (select count(*) from repository_like rl where rl.repository_seq = r.seq) as likeCnt
+        , (select ROUND(cast(AVG(rr.rating) as numeric),1) from repository_rating rr where rr.repository_seq = r.seq) as ratingAvg
+        , (select count(*) from repository_review rr where rr.repository_seq = r.seq) as review
+        FROM repository r
+        LEFT JOIN  repository_process rp ON rp.repository_seq = r.seq
+        WHERE 1=1
+        AND r.delete_datetime is null
+        AND  r.status = 0
+        <if test="startDate != null">
+            AND to_char(r.create_datetime,'YYYY-MM-DD') <![CDATA[ >= ]]> #{startDate}
+        </if>
+        <if test="endDate != null">
+            AND to_char(r.create_datetime,'YYYY-MM-DD') <![CDATA[ <= ]]> #{endDate}
+        </if>
+        <if test="searchWord != null and searchWord != ''">
+            <choose>
+                <when test="searchType == 'appName' ">
+                    AND r.app_name LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <when test="searchType == 'description' ">
+                    AND r.description LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <otherwise>
+                    AND (r.app_name LIKE CONCAT('%',#{searchWord}, '%') or r.description LIKE CONCAT('%',#{searchWord}, '%'))
+                </otherwise>
+            </choose>
+        </if>
+        <if test="keyword != null and keyword != ''">
+            AND CONCAT(COALESCE(r.app_name, ''), COALESCE(r.description, '')) LIKE CONCAT('%', #{keyword}, '%')
+        </if>
+        <if test="component != null">
+            AND r.app_type IN
+            <foreach item="component" collection="component" separator="," open="(" close=")">
+                #{component}
+            </foreach>
+        </if>
+        <if test="bussiness != null">
+            AND rp.process_type IN
+            <foreach item="bussiness" collection="bussiness" separator="," open="(" close=")">
+                #{bussiness}
+            </foreach>
+        </if>
+        <if test="application != null">
+            AND r.application IN
+            <foreach item="application" collection="application" separator="," open="(" close=")">
+                #{application}
+            </foreach>
+        </if>
+        group by r.seq
+        <choose>
+            <when test="order == 0">
+                ORDER BY ${sort} ASC
+            </when>
+            <when test="order == 1">
+                ORDER BY ${sort} DESC
+            </when>
+        </choose>
+        <if test="offset != null and count != null">
+            LIMIT ${count} OFFSET ${offset}
+        </if>
+    </select>
+
+    <select id="selectPopular" resultType="com.laidback.model.Repository">
+        SELECT
+          r.*,
+          (select count(*) from repository_download rd where rd.repository_seq = r.seq) as downloadCnt,
+          (select count(*) from repository_like rl where rl.repository_seq = r.seq) as likeCnt,
+          (select ROUND(cast(AVG(rr.rating) as numeric),1) from repository_rating rr where rr.repository_seq = r.seq) as ratingAvg
+        FROM repository r
+        WHERE 1=1
+        AND r.delete_datetime is null
+        AND  r.status = 0
+        ORDER BY r.view_cnt desc
+        LIMIT 4 OFFSET 0
+    </select>
+
+    <select id="getRepository" parameterType="int" resultType="com.laidback.model.Repository">
+        SELECT
+            r.*
+            , (select count(*) from repository_download rd where rd.repository_seq = r.seq) as downloadCnt
+            , (select count(*) from repository_like rl where rl.repository_seq = r.seq) as likeCnt
+            , (select ROUND(cast(AVG(rr.rating) as numeric),1) from repository_rating rr where rr.repository_seq = r.seq) as ratingAvg
+            , (select count(*) from repository_review rr where rr.repository_seq = r.seq) as review
+        FROM repository r
+        WHERE r.seq = #{value}
+        AND r.delete_datetime is null
+        AND  r.status = 0
+    </select>
+
+    <select id="selectRecomm" resultType="com.laidback.model.Repository">
+        SELECT
+          r.*,
+          (select count(*) from repository_download rd where rd.repository_seq = r.seq) as downloadCnt,
+          (select count(*) from repository_like rl where rl.repository_seq = r.seq) as likeCnt,
+          (select ROUND(cast(AVG(rr.rating) as numeric),1) from repository_rating rr where rr.repository_seq = r.seq) as ratingAvg
+        FROM repository r
+        WHERE 1=1
+        AND r.delete_datetime is null
+        AND  r.status = 0
+        ORDER BY (select count(*) from repository_download rd where rd.repository_seq = r.seq) DESC
+        LIMIT 6 OFFSET 0
+    </select>
+
+    <select id="selectRecommAdmin" resultType="com.laidback.model.Repository">
+        SELECT
+          r.*,
+          (select count(*) from repository_download rd where rd.repository_seq = r.seq) as downloadCnt,
+          (select count(*) from repository_like rl where rl.repository_seq = r.seq) as likeCnt,
+          (select ROUND(cast(AVG(rr.rating) as numeric),1) from repository_rating rr where rr.repository_seq = r.seq) as ratingAvg,
+          (select count(*) from repository_recomm r2 where r2.repository_seq = r.seq) as recomm
+        FROM repository r
+        where (select count(*) from repository_recomm r2 where r2.repository_seq = r.seq) <![CDATA[ > ]]> 0
+        AND r.delete_datetime is null
+        AND  r.status = 0
+    </select>
+
+    <select id="selectUpdate" resultType="com.laidback.model.Repository">
+        SELECT
+          r.*,
+          (select count(*) from repository_download rd where rd.repository_seq = r.seq) as downloadCnt,
+          (select count(*) from repository_like rl where rl.repository_seq = r.seq) as likeCnt,
+          (select ROUND(cast(AVG(rr.rating) as numeric),1) from repository_rating rr where rr.repository_seq = r.seq) as ratingAvg
+        FROM repository r
+        WHERE 1=1
+        AND r.delete_datetime is null
+        AND  r.status = 0
+        ORDER BY r.last_update DESC
+        LIMIT 3 OFFSET 0
+    </select>
+
+    <!-- 레포지토리 상세 정보 조회 -->
+    <select id="findByRepository" parameterType="map" resultType="com.laidback.model.Repository">
+        SELECT
+            r.*
+          , (SELECT ARRAY_TO_STRING(array_agg(rp.process_type),',') FROM repository_process rp WHERE rp.repository_seq = r.seq) AS processType
+          FROM repository r
+         WHERE r.seq = #{seq}
+    </select>
+
+    <select id="getExeclDownList" parameterType="map" resultType="com.laidback.model.Repository">
+        SELECT
+            r.*
+          , (SELECT ARRAY_TO_STRING(array_agg(rp.process_type),',') FROM repository_process rp WHERE rp.repository_seq = r.seq) AS processType
+          , (select count(*) from repository_download rd where rd.seq = r.seq) as downloadCnt
+          , (SELECT COUNT(*) FROM repository_qna rq WHERE rq.repository_seq = r.seq) as qnaCnt
+          , (select count(*) from repository_like rl where rl.repository_seq = r.seq) as likeCnt
+          , (select ROUND(cast(AVG(rr.rating) as numeric),1) from repository_rating rr where rr.repository_seq = r.seq) as ratingAvg
+          , (select count(*) from repository_review rr where rr.repository_seq = r.seq) as review
+          FROM repository r
+         WHERE 1 = 1
+        <if test="repositoryList != null">
+            AND r.seq IN
+            <foreach item="seq" collection="repositoryList" separator="," open="(" close=")">
+                #{seq}
+            </foreach>
+        </if>
+         ORDER BY r.create_datetime DESC
+    </select>
+
+</mapper>

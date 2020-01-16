@@ -1,0 +1,6 @@
+rootProject.name = 'potal'
+include 'common'
+include 'admin'
+include 'contract'
+include 'apps'
+

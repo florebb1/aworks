@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.laidback.mapper.RepositoryQnaMapper">
+    <resultMap id="repositoryQnaResultMap" type="com.laidback.model.RepositoryQna">
+        <id property="id" column="id"/>
+    </resultMap>
+    <select id="find" parameterType="map" resultType="com.laidback.model.RepositoryQna">
+        SELECT *
+        FROM repository_qna a
+        WHERE repository_seq = #{marketId}
+
+        <if test="offset != null and count != null">
+            LIMIT ${count} OFFSET ${offset}
+        </if>
+    </select>
+
+    <select id="countByUser" parameterType="map" resultType="int">
+        SELECT
+            COUNT(*)
+          FROM repository_qna
+         WHERE 1 = 1
+           AND user_seq = #{userSeq}
+    </select>
+
+    <select id="findByUser" parameterType="map" resultType="com.laidback.model.RepositoryQna">
+        SELECT
+            rq.*
+          , rq.repository_seq as repositorySeq
+          , r.app_name as appName
+          FROM repository_qna rq
+            LEFT OUTER JOIN repository r ON rq.repository_seq = r.seq
+         WHERE 1 = 1
+           AND rq.user_seq = #{userSeq}
+        <choose>
+            <when test="order == 0">
+                ORDER BY ${sort} ASC
+            </when>
+            <when test="order == 1">
+                ORDER BY ${sort} DESC
+            </when>
+        </choose>
+        <if test="offset != null and count != null">
+            LIMIT ${count} OFFSET ${offset}
+        </if>
+    </select>
+
+</mapper>

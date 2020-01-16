@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.laidback.mapper.BbsFileMapper">
+    <!-- CS 관리 첨부파일 조회 -->
+    <select id="findByFiles" parameterType="map" resultType="com.laidback.model.BbsFile">
+        SELECT
+            bf.*
+          FROM bbs_file bf
+         WHERE 1 = 1
+           AND bf.delete_datetime is null
+           AND bf.bbs_code = #{bbsCode}
+           AND bf.bbs_seq = #{bbsSeq}
+    </select>
+
+    <select id="noticeByFiles" parameterType="map" resultType="com.laidback.model.BbsFile">
+        SELECT
+            *
+          FROM bbs_file
+         WHERE 1 = 1
+           AND delete_datetime is null
+           AND bbs_code = 'notice'
+           AND bbs_seq = #{bbsSeq}
+    </select>
+
+    <select id="fileCount" parameterType="map" resultType="int">
+        SELECT
+            COUNT(*)
+          FROM bbs_file
+         WHERE 1 = 1
+           AND delete_datetime is null
+           AND bbs_code = 'notice'
+           AND bbs_seq = #{bbsSeq}
+    </select>
+
+    <select id="aafCount" parameterType="map" resultType="int">
+        SELECT
+            COUNT(*)
+          FROM bbs_file
+         WHERE 1 = 1
+           AND delete_datetime is null
+           AND bbs_code = 'bug'
+           OR bbs_code = 'onetoone'
+           AND file_type = 1
+    </select>
+
+    <select id="aaf" parameterType="map" resultType="com.laidback.model.BbsFile">
+        SELECT
+            *
+          FROM bbs_file
+         WHERE 1 = 1
+           AND delete_datetime is null
+           AND bbs_code = 'bug'
+           OR bbs_code = 'onetoone'
+           AND file_type = 1
+    </select>
+
+    <!-- 파일 정보 조회 -->
+    <select id="findByFile" parameterType="map" resultType="com.laidback.model.BbsFile">
+        SELECT  * FROM bbs_file WHERE seq = #{seq}
+    </select>
+    <!-- 질문 -->
+    <select id="findByFilesQ" parameterType="map" resultType="com.laidback.model.BbsFile">
+        SELECT
+            bf.*
+          FROM bbs_file bf
+         WHERE 1 = 1
+           AND bf.delete_datetime is null
+           AND bf.bbs_code = #{bbsCode}
+           AND bf.bbs_seq = #{bbsSeq}
+           AND file_type = 0
+    </select>
+    <!-- 답변 -->
+    <select id="findByFilesA" parameterType="map" resultType="com.laidback.model.BbsFile">
+        SELECT
+            bf.*
+          FROM bbs_file bf
+         WHERE 1 = 1
+           AND bf.delete_datetime is null
+           AND bf.bbs_code = #{bbsCode}
+           AND bf.bbs_seq = #{bbsSeq}
+           AND file_type = 1
+    </select>
+</mapper>

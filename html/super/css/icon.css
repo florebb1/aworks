@@ -1,0 +1,51 @@
+/*!
+# A.Works Super icon style
+# Laidback david 2019.01.04
+*/
+
+.icon-xs {
+    width:12px;
+    height:12px;
+}
+
+.icon {
+    width:22px;
+    height:22px;
+}
+.icon-logo-size-xl {
+    width:213px;
+    height:30px;
+}
+.icon-logo-size {
+    width:113px;
+    height:16px;
+}
+.icon-logo {
+    -webkit-mask-image: url(../images/logo.svg);
+    mask-image: url(../images/logo.svg);
+    background-color:#ffffff; /* 기본 아이콘 색상 */
+}
+.icon-menu {
+    -webkit-mask-image: url(../images/menu.svg);
+    mask-image: url(../images/menu.svg);
+    background-color:#ffffff; /* 기본 아이콘 색상 */
+}
+.icon-settings {
+    -webkit-mask-image: url(../images/settings.svg);
+    mask-image: url(../images/settings.svg);
+    background-color:#ffffff; /* 기본 아이콘 색상 */
+}
+.icon-logout {
+    -webkit-mask-image: url(../images/logout.svg);
+    mask-image: url(../images/logout.svg);
+    background-color:#ffffff; /* 기본 아이콘 색상 */
+}
+.icon-search {
+    -webkit-mask-image: url(../images/magnifying-glass.svg);
+    mask-image: url(../images/magnifying-glass.svg);
+    background-color:#000; /* 기본 아이콘 색상 */
+}
+
+.main-color {
+    background-color:#00a3ad;
+}

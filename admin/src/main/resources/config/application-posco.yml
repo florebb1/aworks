@@ -1,0 +1,106 @@
+server:
+  port: 8097
+  session:
+    timeout: 38000
+    persistent: true
+
+endpoints:
+  enabled: false
+  shutdown:
+    enabled: false
+  jmx:
+    enabled: false
+
+
+spring:
+  profiles:
+    active: local
+  devtools:
+    livereload:
+      enabled: true
+  freemarker:
+    cache: false
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+  datasource:
+    dataSourceClassName: org.postgresql.Driver
+    url: jdbc:postgresql://aworksinstance.cj8rym1oyohi.ap-northeast-2.rds.amazonaws.com:5432/aworksportal?createDatabaseIfNotExist=true
+    username: portaladmin
+    password: poscoict!@#
+
+  mvc:
+    favicon:
+      enabled: false
+
+  http:
+    multipart:
+      maxFileSize: 300MB
+      maxRequestSize: 300MB
+
+  mail:
+    host: aworks-Portal-NLB-50ec519e446a5faa.elb.ap-northeast-2.amazonaws.com
+    port: 25
+    username: portal
+    password: 'portal1!'
+    protocol: smtp
+    properties:
+      mail:
+        smtp:
+          start-tls-enable: true
+          auth: true
+          ssl:
+            enable: false
+        transport:
+          protocol: smtps
+#  mail:
+#    host: smtp.gmail.com
+#    port: 465
+#    username: kjh@laidback.co.kr
+#    password: 'wlgns9337'
+#    protocol: smtp
+#    properties:
+#      mail:
+#        smtp:
+#          start-tls-enable: true
+#          auth: true
+#          ssl:
+#            enable: true
+#        transport:
+#          protocol: smtps
+amazonProperties:
+  endpointUrl: https://s3.ap-northeast-2.amazonaws.com
+  accessKey: AKIA2A5WUWVQQKDKMA7B
+  secretKey: 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
+  bucketName: a.works
+mybatis:
+  config: classpath:mybatis-config.xml
+
+
+logging:
+  config: classpath:logback-spring.xml
+
+log4j:
+  logger:
+    jdbc:
+      sqltiming: DEBUG
+    package:
+      path: TRACE
+    java:
+      sql:
+        Connection: DEBUG
+        Statement: DEBUG
+        PreparedStatement: DEBUG
+        ResultSet: DEBUG
+aes:
+  pw: poscoict
+
+workcenter:
+  url: http://10.10.4.10:9090
+  clientId: cloudrpa-client1
+  clientSecret: 7aKTMjx9qkHHipSg
+  grantType: password
+  userName: poscoict@poscoict.com
+  password: poscoict

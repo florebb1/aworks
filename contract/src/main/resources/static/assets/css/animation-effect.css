@@ -1,0 +1,583 @@
+/*!
+a.works animation effect / Posco ict & Laidback (David)
+*/
+
+.wow {
+    visibility: hidden;
+  }
+
+.platform-wrap {
+    position:relative;
+    margin-top: -30px;
+    margin-left:-90px;
+    width:652px;
+	height:570px;
+    zoom:1.1;
+}
+
+.platform-wrap .circle1 {
+	position:absolute;
+	width:122px;
+	height:122px;
+	border-radius:50%;
+	background:#cfdbe7;
+	background-position:center center;
+	background-size:50%;
+	background-repeat: no-repeat;
+    z-index:10;
+    opacity:0;
+}
+
+.platform-wrap .circlea {
+	position:relative;
+	top:233px;
+	left:332px;
+	width: 122px;
+	height: 122px;
+	border-radius: 50%;
+}
+.shadows {
+    -webkit-box-shadow: 3px 3px 10px 0px rgba(0,0,0,0.3);
+    -moz-box-shadow: 3px 3px 10px 0px rgba(0,0,0,0.3);
+    box-shadow: 3px 3px 10px 0px rgba(0,0,0,0.3);
+}
+
+.platform-wrap .circlea .linea1 {transform:rotate(12deg);}
+.platform-wrap .circlea .linea1 {animation:linea 1s ease 0.5s forwards;}
+@keyframes linea {0% {left:60px;width:0;}100% {left:60px;width: 180px;}}
+
+.platform-wrap .circlea .linea2 {transform:rotate(50deg);}
+.platform-wrap .circlea .linea2 {animation:lineb 1s ease 0.5s forwards;}
+@keyframes lineb {0% {left:60px;width:0;}100% {left:60px;width: 210px;}}
+
+.platform-wrap .circlea .linea3 {transform:rotate(120deg);}
+.platform-wrap .circlea .linea3 {animation:linec 1s ease 0.5s forwards;}
+@keyframes linec {0% {left:60px;width:0;}100% {left:60px;width: 160px;}}
+
+.platform-wrap .circlea .linea4 {transform:rotate(170deg);}
+.platform-wrap .circlea .linea4 {animation:lined 1s ease 0.5s forwards;}
+@keyframes lined {0% {left:60px;width:0;}100% {left:60px;width: 180px;}}
+
+.platform-wrap .circlea .linea5 {transform:rotate(222deg);}
+.platform-wrap .circlea .linea5 {animation:linee 1s ease 0.5s forwards;}
+@keyframes linee {0% {left:60px;width:0;}100% {left:60px;width: 180px;}}
+
+.platform-wrap .circlea .linea6 {transform:rotate(300deg);}
+.platform-wrap .circlea .linea6 {animation:linef 1s ease 0.5s forwards;}
+@keyframes linef {0% {left:60px;width:0;}100% {left:60px;width: 145px;}}
+
+.platform-wrap .potl {
+	perspective-origin: top left;
+	-webkit-perspective-origin: top left;
+}
+
+.platform-wrap .circlea > div {
+	position: absolute;
+	top: 60px;
+	left: 60px;
+	border-top: 2px solid #dbe3f2;
+	transform-origin:top left;
+	z-index:0;
+}
+.platform-wrap .circlea > .linea2 {
+	border-top: 5px solid #dbe3f2;
+}
+.platform-wrap .circlea > .linea4 {
+	border-top: 5px solid #dbe3f2;
+}
+.platform-wrap .circlea > .linea6 {
+	border-top: 5px solid #dbe3f2;
+}
+
+.platform-wrap .circle1 {position:absolute;top:233px;left:332px;border-radius:50%;z-index:10;background-image:url('/assets/images/plat-img/alogo.png');opacity:0;}
+.platform-wrap .circle1 {animation:circlema 1s ease 0.5s forwards;animation-delay:0s;}
+@keyframes circlema {0% {top:294px;left:393px;width:0;height:0;opacity:0;}100% {width:122px;height:122px;opacity:1;}}
+
+.platform-wrap .circle2 {position:absolute;top:298px;left:534px;border-radius:50%;background:#afafaf;z-index:10;opacity:1;}
+.platform-wrap .circle2 {animation:circleg 1s ease 0.5s forwards;animation-delay:1.3s;}
+@keyframes circleg {0% {top:329px;left:565px;width:0;height:0;}100% {width:62px;height:62px;}}
+
+.platform-wrap .circle3 {position:absolute;top:408px;left:484px;border-radius:50%;background:#ccd3dd;z-index:10;opacity:1;}
+.platform-wrap .circle3 {animation:circleh 1s ease 0.5s forwards;animation-delay:1.3s;}
+@keyframes circleh {0% {top:452px;left:528px;width:0;height:0;}100% {width:88px;height:88px;}}
+
+.platform-wrap .circle4 {position:absolute;top:400px;left:280px;border-radius:50%;background:#cad3e6;z-index:10;opacity:1;}
+.platform-wrap .circle4 {animation:circlel 1s ease 0.5s forwards;animation-delay:1.3s;}
+@keyframes circlel {0% {top:431px;left:311px;width:0;height:0;}100% {width:62px;height:62px;}}
+
+.platform-wrap .circle5 {position:absolute;top:284px;left:180px;border-radius:50%;background:#c6d4e2;z-index:10;opacity:1;}
+.platform-wrap .circle5 {animation:circlei 1s ease 0.5s forwards;animation-delay:1.3s;}
+@keyframes circlei {0% {top:323px;left:219px;width:0;height:0;}100% {width:78px;height:78px;}}
+
+.platform-wrap .circle6 {position:absolute;top:136px;left:218px;border-radius:50%;background:#cccccc;z-index:10;opacity:1;}
+.platform-wrap .circle6 {animation:circlej 1s ease 0.5s forwards;animation-delay:1.3s;}
+@keyframes circlej {0% {top:172px;left:254px;width:0;height:0;}100% {width:72px;height:72px;}}
+
+.platform-wrap .circle7 {position:absolute;top:128px;left:424px;border-radius:50%;background:#adbddb;z-index:10;opacity:1;}
+.platform-wrap .circle7 {animation:circlek 1s ease 0.5s forwards;animation-delay:1.3s;}
+@keyframes circlek {0% {top:167px;left:463px;width:0;height:0;}100% {width:78px;height:78px;}}
+
+
+
+
+.platform-wrap .circleb {position:relative;top:208px;left:568px;width:0;height:0;}
+.platform-wrap .circleb .linea7 {transform:rotate(320deg);}
+.platform-wrap .circleb .linea7 {animation:linem 1s ease 1s forwards;animation-delay:2s;}
+@keyframes linem {0% {left:0;width:0;}100% {left:0;width:90px;}}
+
+.platform-wrap .circlec {position:relative;top:332px;left:526px;width:0;height:0;}
+.platform-wrap .circlec .linea8 {transform:rotate(35deg);}
+.platform-wrap .circlec .linea8 {animation:linen 1s ease 1s forwards;animation-delay:2s;}
+@keyframes linen {0% {left:0;width:0;}100% {left:0;width:120px;}}
+
+.platform-wrap .circled {position:relative;top:308px;left:312px;width:0;height:0;}
+.platform-wrap .circled .linea9 {transform:rotate(140deg);}
+.platform-wrap .circled .linea9 {animation:lineo 1s ease 1s forwards;animation-delay:2s;}
+@keyframes lineo {0% {left:0;width:0;}100% {left:0;width:135px;}}
+
+.platform-wrap .circlee {position:relative;top:202px;left:216px;width:0;height:0;}
+.platform-wrap .circlee .linea10 {transform:rotate(190deg);}
+.platform-wrap .circlee .linea10 {animation:linep 1s ease 1s forwards;animation-delay:2s;}
+@keyframes linep {0% {left:0;width:0;}100% {left:0;width:90px;}}
+
+.platform-wrap .circlef {position:relative;top:50px;left:256px;width:0;height:0;}
+.platform-wrap .circlef .linea11 {transform:rotate(232deg);}
+.platform-wrap .circlef .linea11 {animation:lineu 1s ease 1s forwards;animation-delay:2s;}
+@keyframes lineu {0% {left:0;width:0;}100% {left:0;width:110px;}}
+
+.platform-wrap .circleg {position:relative;top:44px;left:466px;width:0;height:0;}
+.platform-wrap .circleg .linea12 {transform:rotate(320deg);}
+.platform-wrap .circleg .linea12 {animation:linew 1s ease 1s forwards;animation-delay:2s;}
+@keyframes linew {0% {left:0;width:0;}100% {left:0;width:110px;}}
+
+/* .platform-wrap .circlea .linea13 {transform:rotate(335deg);top:240px !important;}
+.platform-wrap .circlea .linea13 {animation:linex 1s ease 1s forwards;animation-delay:6s;}
+@keyframes linex {0% {left:265px;width:0;}100% {left:265px;width:80px;}} */
+
+.platform-wrap .circle-wrap > div {
+	position: absolute;
+	top:0px;
+	left:0px;
+	border-top: 2px solid #dbe3f2;
+	transform-origin:top left;
+	z-index:0;
+}
+
+
+.platform-wrap .circle8 {position:absolute;top:256px;left:620px;border-radius:50%;background:#e0eaf5;z-index:10;}
+.platform-wrap .circle8 {animation:circleq 1s ease 0.5s forwards;animation-delay:3s;}
+@keyframes circleq {0% {top:272px;left:636px;width:0;height:0;}100% {width:32px;height:32px;}}
+
+.platform-wrap .circle9 {position:absolute;top:506px;left:608px;border-radius:50%;background:#e0eaf5;z-index:10;}
+.platform-wrap .circle9 {animation:circler 1s ease 0.5s forwards;animation-delay:3s;}
+@keyframes circler {0% {top:522px;left:624px;width:0;height:0;}100% {width:32px;height:32px;}}
+
+.platform-wrap .circle10 {position:absolute;top:498px;left:190px;border-radius:50%;background:#d8dbe5;z-index:10;}
+.platform-wrap .circle10 {animation:circles 1s ease 0.5s forwards;animation-delay:3s;}
+@keyframes circles {0% {top:516px;left:208px;width:0;height:0;}100% {width:36px;height:36px;}}
+
+.platform-wrap .circle11 {position:absolute;top:285px;left:110px;border-radius:50%;background:#c5d2df;z-index:10;}
+.platform-wrap .circle11 {animation:circlet 1s ease 0.5s forwards;animation-delay:3s;}
+@keyframes circlet {0% {top:305px;left:130px;width:0;height:0;}100% {width:40px;height:40px;}}
+
+.platform-wrap .circle12 {position:absolute;top:72px;left:177px;border-radius:50%;background:#dde8f3;z-index:10;}
+.platform-wrap .circle12 {animation:circlev 1s ease 0.5s forwards;animation-delay:3s;}
+@keyframes circlev {0% {top:84px;left:189px;width:0;height:0;}100% {width:24px;height:24px;}}
+
+.platform-wrap .circle13 {position:absolute;top:76px;left:530px;border-radius:50%;background:#c5d2e0;z-index:10;}
+.platform-wrap .circle13 {animation:circley 1s ease 0.5s forwards;animation-delay:3s;}
+@keyframes circley {0% {top:96px;left:550px;width:0;height:0;}100% {width:40px;height:40px;}}
+
+
+.platform-wrap .circle2 {
+	background-image:url('/assets/images/plat-img/cart.png');
+	background-position:center center;
+	background-size:80%;
+	background-repeat: no-repeat;
+}
+.platform-wrap .circle3 {
+	background-image:url('/assets/images/plat-img/finance.png');
+	background-position:center center;
+	background-size:50%;
+	background-repeat: no-repeat;
+}
+.platform-wrap .circle5 {
+	background-image:url('/assets/images/plat-img/it.png');
+	background-position:center center;
+	background-size:65%;
+	background-repeat: no-repeat;
+}
+.platform-wrap .circle6 {
+	background-image:url('/assets/images/plat-img/factory.png');
+	background-position:center center;
+	background-size:50%;
+	background-repeat: no-repeat;
+}
+.platform-wrap .circle7 {
+	background-image:url('/assets/images/plat-img/muf.png');
+	background-position:center center;
+	background-size:95%;
+	background-repeat: no-repeat;
+}
+.platform-wrap .circle11 {
+	background-image:url('/assets/images/plat-img/chatbot.png');
+	background-position:center center;
+	background-size:90%;
+	background-repeat: no-repeat;
+}
+.platform-wrap .circle13 {
+	background-image:url('/assets/images/plat-img/textmining.png');
+	background-position:center center;
+	background-size:70%;
+	background-repeat: no-repeat;
+}
+
+
+.platform-wrap .spore1 {
+    position:absolute;
+    top:175px;
+    left:92px;
+    width:60px;
+    height:60px;
+	background-image:url('/assets/images/plat-img/spore1.png');
+	background-position:center center;
+	background-size:70%;
+	background-repeat: no-repeat;
+}
+.platform-wrap .spore2 {
+    position:absolute;
+    top:50px;
+    left:370px;
+    width:40px;
+    height:40px;
+	background-image:url('/assets/images/plat-img/spore2.png');
+	background-position:center center;
+	background-size:70%;
+	background-repeat: no-repeat;
+}
+.platform-wrap .spore3 {
+    position:absolute;
+    top: 428px;
+    left: 374px;
+    width:60px;
+    height:60px;
+	background-image:url('/assets/images/plat-img/spore3.png');
+	background-position:center center;
+	background-size:70%;
+	background-repeat: no-repeat;
+}
+.platform-wrap .spore4 {
+    position:absolute;
+    top: 428px;
+    left: 86px;
+    width:30px;
+    height:30px;
+	background-image:url('/assets/images/plat-img/spore3.png');
+	background-position:center center;
+	background-size:70%;
+	background-repeat: no-repeat;
+}
+
+
+@-webkit-keyframes rotating {
+    from {
+        -webkit-transform: rotate(0deg);
+        -o-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    to {
+        -webkit-transform: rotate(360deg);
+        -o-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}
+@keyframes rotating {
+    from {
+        -ms-transform: rotate(0deg);
+        -moz-transform: rotate(0deg);
+        -webkit-transform: rotate(0deg);
+        -o-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    to {
+        -ms-transform: rotate(360deg);
+        -moz-transform: rotate(360deg);
+        -webkit-transform: rotate(360deg);
+        -o-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}
+.rotating {
+    -webkit-animation: rotating 5s linear infinite;
+    -moz-animation: rotating 5s linear infinite;
+    -ms-animation: rotating 5s linear infinite;
+    -o-animation: rotating 5s linear infinite;
+    animation: rotating 5s linear infinite;
+    animation-delay:1s;
+}
+
+
+
+
+@-webkit-keyframes rotating2 {
+    from {
+        -webkit-transform: rotate(0deg);
+        -o-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    to {
+        -webkit-transform: rotate(360deg);
+        -o-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}
+@keyframes rotating2 {
+    from {
+        -ms-transform: rotate(0deg);
+        -moz-transform: rotate(0deg);
+        -webkit-transform: rotate(0deg);
+        -o-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    to {
+        -ms-transform: rotate(360deg);
+        -moz-transform: rotate(360deg);
+        -webkit-transform: rotate(360deg);
+        -o-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}
+.rotating2 {
+    -webkit-animation: rotating2 1s linear infinite;
+    -moz-animation: rotating2 1s linear infinite;
+    -ms-animation: rotating2 1s linear infinite;
+    -o-animation: rotating2 1s linear infinite;
+    animation: rotating2 1s linear infinite;
+    animation-delay:2.5s;
+}
+
+
+
+
+@-webkit-keyframes rotating3 {
+    from {
+        -webkit-transform: rotate(0deg);
+        -o-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    to {
+        -webkit-transform: rotate(360deg);
+        -o-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}
+@keyframes rotating3 {
+    from {
+        -ms-transform: rotate(0deg);
+        -moz-transform: rotate(0deg);
+        -webkit-transform: rotate(0deg);
+        -o-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    to {
+        -ms-transform: rotate(-360deg);
+        -moz-transform: rotate(-360deg);
+        -webkit-transform: rotate(-360deg);
+        -o-transform: rotate(-360deg);
+        transform: rotate(-360deg);
+    }
+}
+.rotating3 {
+    -webkit-animation: rotating3 3.5s linear infinite;
+    -moz-animation: rotating3 3.5s linear infinite;
+    -ms-animation: rotating3 3.5s linear infinite;
+    -o-animation: rotating3 3.5s linear infinite;
+    animation: rotating3 3.5s linear infinite;
+    animation-delay:5s;
+}
+
+
+
+@-webkit-keyframes rotating4 {
+    from {
+        -webkit-transform: rotate(0deg);
+        -o-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    to {
+        -webkit-transform: rotate(360deg);
+        -o-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}
+@keyframes rotating4 {
+    from {
+        -ms-transform: rotate(0deg);
+        -moz-transform: rotate(0deg);
+        -webkit-transform: rotate(0deg);
+        -o-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    to {
+        -ms-transform: rotate(-360deg);
+        -moz-transform: rotate(-360deg);
+        -webkit-transform: rotate(-360deg);
+        -o-transform: rotate(-360deg);
+        transform: rotate(-360deg);
+    }
+}
+.rotating4 {
+    -webkit-animation: rotating4 3.5s linear infinite;
+    -moz-animation: rotating4 3.5s linear infinite;
+    -ms-animation: rotating4 3.5s linear infinite;
+    -o-animation: rotating4 3.5s linear infinite;
+    animation: rotating4 3.5s linear infinite;
+    animation-delay:5s;
+}
+
+.platform-wrap2 {
+    background-image: url('/assets/images/img/animation_02.gif');
+    background-position: center center;
+    background-size:100%;
+    background-repeat: no-repeat;
+    animation: fadein 1s;
+    -moz-animation: fadein 1s; /* Firefox */
+    -webkit-animation: fadein 1s; /* Safari and Chrome */
+    -o-animation: fadein 1s; /* Opera */
+
+}
+.main-animation-02 {
+    width:100%;
+    height:480px;
+}
+.platform-wrap3 {
+    background-image: url('/assets/images/img/animation_03.gif');
+    background-position: center center;
+    background-size:100%;
+    background-repeat: no-repeat;
+    animation: fadein 1s;
+    -moz-animation: fadein 1s; /* Firefox */
+    -webkit-animation: fadein 1s; /* Safari and Chrome */
+    -o-animation: fadein 1s; /* Opera */
+
+}
+.main-animation-03 {
+    width:100%;
+    height:420px;
+}
+
+.platform-wrap4 {
+    background-image: url('/assets/images/img/animation_04.gif');
+    background-position:calc(50% + 25px) center;
+    background-size:120%;
+    background-repeat: no-repeat;
+    animation: fadein 1s;
+    -moz-animation: fadein 1s; /* Firefox */
+    -webkit-animation: fadein 1s; /* Safari and Chrome */
+    -o-animation: fadein 1s; /* Opera */
+
+}
+.main-animation-04 {
+    width:100%;
+    height:610px;
+}
+@keyframes fadein {
+    from {
+        opacity:0;
+    }
+    to {
+        opacity:1;
+    }
+}
+@-moz-keyframes fadein { /* Firefox */
+    from {
+        opacity:0;
+    }
+    to {
+        opacity:1;
+    }
+}
+@-webkit-keyframes fadein { /* Safari and Chrome */
+    from {
+        opacity:0;
+    }
+    to {
+        opacity:1;
+    }
+}
+@-o-keyframes fadein { /* Opera */
+    from {
+        opacity:0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+
+
+
+.fade-slider {
+    width: 100%;
+    height:500px;
+    margin: 20px auto;
+    position: relative;
+}
+.fade-slide1,.fade-slide2,.fade-slide3,.fade-slide4 {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+.fade-slide1 {
+    background: url('/assets/images/rpa/sc001.jpg')no-repeat center;
+    background-size: cover;
+    animation:fade 12s infinite;
+    -webkit-animation:fade 12s infinite;
+
+} 
+.fade-slide2 {
+    background: url('/assets/images/rpa/sc002.jpg')no-repeat center;
+    background-size: cover;
+    animation:fade2 12s infinite;
+    -webkit-animation:fade2 12s infinite;
+}
+.fade-slide3 {
+    background: url('/assets/images/rpa/sc003.jpg')no-repeat center;
+    background-size: cover;
+    animation:fade3 12s infinite;
+    -webkit-animation:fade3 12s infinite;
+}
+.fade-slide4 {
+    background: url('/assets/images/rpa/sc004.jpg')no-repeat center;
+    background-size: cover;
+    animation:fade4 12s infinite;
+    -webkit-animation:fade4 12s infinite;
+}
+@keyframes fade
+{
+    0%   {opacity:1}
+    33.333% { opacity: 0}
+    66.666% { opacity: 0}
+    100% { opacity: 0}
+}
+@keyframes fade2
+{
+    0%   {opacity:0}
+    33.333% { opacity: 1}
+    66.666% { opacity: 0 }
+    100% { opacity: 0}
+}
+@keyframes fade3
+{
+    0%   {opacity:0}
+    33.333% { opacity: 0}
+    66.666% { opacity: 1}
+    100% { opacity: 0}
+}
+@keyframes fade4
+{
+    0%   {opacity:0}
+    33.333% { opacity: 0}
+    66.666% { opacity: 0}
+    100% { opacity: 1}
+}

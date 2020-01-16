@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.laidback.mapper.TrialUserMapper">
+    <resultMap id="repositoryUserResultMap" type="com.laidback.model.TrialUser">
+        <id property="id" column="id"/>
+    </resultMap>
+
+    <select id="find" parameterType="map" resultType="int">
+        SELECT
+          seq
+        FROM trial_user
+        WHERE 1=1
+        AND email = #{email}
+    </select>
+
+    <select id="count" parameterType="map" resultType="int">
+        SELECT
+          COUNT(*)
+        FROM trial_user
+        WHERE 1=1
+        AND email = #{email}
+    </select>
+
+    <select id="countBySuper" parameterType="map" resultType="int">
+        SELECT
+            COUNT(*)
+          FROM trial_user tu
+            LEFT OUTER JOIN trial_license tl ON tu.seq = tl.trial_seq
+         WHERE 1 = 1
+        <if test="startDate != null">
+            AND to_char(tl.start_date,'YYYY-MM-DD') <![CDATA[ >= ]]> #{startDate}
+        </if>
+        <if test="endDate != null">
+            AND to_char(tl.end_date,'YYYY-MM-DD') <![CDATA[ <= ]]> #{endDate}
+        </if>
+        <if test="searchWord != null and searchWord != ''">
+            <choose>
+                <when test="searchType == 'name' ">
+                    AND tu.name LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <when test="searchType == 'company' ">
+                    AND tu.company LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <when test="searchType == 'email' ">
+                    AND tu.email LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <when test="searchType == 'position' ">
+                    AND tu.position LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <when test="searchType == 'phone' ">
+                    AND tu.phone LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <otherwise>
+                    AND ( tu.name LIKE CONCAT('%',#{searchWord}, '%') or
+                    tu.company LIKE CONCAT('%',#{searchWord}, '%') or
+                    tu.email LIKE CONCAT('%',#{searchWord}, '%') or
+                    tu.phone LIKE CONCAT('%',#{searchWord}, '%') or
+                    tu.position LIKE CONCAT('%',#{searchWord}, '%') )
+                </otherwise>
+            </choose>
+        </if>
+    </select>
+
+    <select id="findBySuper" parameterType="map" resultType="com.laidback.model.TrialUser">
+        SELECT
+            tu.*
+          , tl.end_date AS endDate
+          , tl.start_date AS startDate
+          , tl.extension AS extension
+          , tl.status AS status
+          , tl.license_key as licenseKey
+          FROM trial_user tu
+            LEFT OUTER JOIN trial_license tl ON tu.seq = tl.trial_seq
+         WHERE 1 = 1
+        <if test="startDate != null">
+            AND to_char(tl.start_date,'YYYY-MM-DD') <![CDATA[ >= ]]> #{startDate}
+        </if>
+        <if test="endDate != null">
+            AND to_char(tl.end_date,'YYYY-MM-DD') <![CDATA[ <= ]]> #{endDate}
+        </if>
+        <if test="searchWord != null and searchWord != ''">
+            <choose>
+                <when test="searchType == 'name' ">
+                    AND tu.name LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <when test="searchType == 'company' ">
+                    AND tu.company LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <when test="searchType == 'email' ">
+                    AND tu.email LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <when test="searchType == 'position' ">
+                    AND tu.position LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <when test="searchType == 'phone' ">
+                    AND tu.phone LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <otherwise>
+                    AND ( tu.name LIKE CONCAT('%',#{searchWord}, '%') or
+                          tu.company LIKE CONCAT('%',#{searchWord}, '%') or
+                          tu.email LIKE CONCAT('%',#{searchWord}, '%') or
+                          tu.phone LIKE CONCAT('%',#{searchWord}, '%') or
+                          tu.position LIKE CONCAT('%',#{searchWord}, '%') )
+                </otherwise>
+            </choose>
+        </if>
+        <choose>
+            <when test="order == 0">
+                ORDER BY ${sort} ASC
+            </when>
+            <when test="order == 1">
+                ORDER BY ${sort} DESC
+            </when>
+        </choose>
+        <if test="offset != null and count != null">
+            LIMIT ${count} OFFSET ${offset}
+        </if>
+    </select>
+
+    <select id="getExeclDownList" parameterType="map" resultType="com.laidback.model.TrialUser">
+        SELECT
+            tu.*
+          , tl.end_date AS endDate
+          , tl.start_date AS startDate
+          , tl.extension AS extension
+          , tl.status AS status
+          FROM trial_user tu
+            LEFT OUTER JOIN trial_license tl ON tu.seq = tl.trial_seq
+         WHERE 1 = 1
+        <if test="trialList != null">
+            AND tu.seq IN
+            <foreach item="seq" collection="trialList" separator="," open="(" close=")">
+                #{seq}
+            </foreach>
+        </if>
+        ORDER BY tl.start_date DESC
+    </select>
+
+</mapper>

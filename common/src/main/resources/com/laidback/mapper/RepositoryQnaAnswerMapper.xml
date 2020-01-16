@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.laidback.mapper.RepositoryQnaAnswerMapper">
+    <resultMap id="repositoryQnaAnswerResultMap" type="com.laidback.model.RepositoryQnaAnswer">
+        <id property="id" column="id"/>
+    </resultMap>
+    <select id="find" parameterType="map" resultType="com.laidback.model.RepositoryQnaAnswer">
+        SELECT *
+        FROM repository_qna_answer a
+        WHERE repository_qna_seq = #{repositoryQnaSeq}
+    </select>
+
+</mapper>

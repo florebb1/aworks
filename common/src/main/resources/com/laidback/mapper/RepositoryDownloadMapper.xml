@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.laidback.mapper.RepositoryDownloadMapper">
+    <resultMap id="repositoryDownloadResultMap" type="com.laidback.model.RepositoryDownload">
+        <id property="id" column="id"/>
+    </resultMap>
+    <select id="getDuple" parameterType="map" resultType="com.laidback.model.RepositoryDownload">
+        SELECT
+          *
+        FROM repository_download
+        WHERE user_seq = #{userSeq}
+        AND repository_seq = #{repositorySeq}
+    </select>
+
+    <select id="count" parameterType="map" resultType="int">
+        SELECT COUNT(*)
+        FROM repository_download
+        WHERE user_seq = #{userSeq}
+    </select>
+
+    <select id="find" parameterType="map" resultType="com.laidback.model.RepositoryDownload">
+        SELECT *
+        FROM repository_download
+        WHERE user_seq = #{userSeq}
+
+        <choose>
+            <when test="order == 0">
+                ORDER BY ${sort} ASC
+            </when>
+            <when test="order == 1">
+                ORDER BY ${sort} DESC
+            </when>
+        </choose>
+        <if test="offset != null and count != null">
+            LIMIT ${count} OFFSET ${offset}
+        </if>
+    </select>
+
+    <select id="findByDownload" parameterType="map" resultType="com.laidback.model.RepositoryDownload">
+        SELECT
+        rd.create_datetime, rd.user_seq, rd.repository_seq,
+        r.app_name, r.app_type, r.description, r.delete_datetime, r.status
+        FROM repository_download rd
+        LEFT JOIN repository r ON r.seq = rd.repository_seq
+        WHERE rd.user_seq = #{userSeq}
+
+        <choose>
+            <when test="order == 0">
+                ORDER BY rd.${sort} ASC
+            </when>
+            <when test="order == 1">
+                ORDER BY rd.${sort} DESC
+            </when>
+        </choose>
+        <if test="offset != null and count != null">
+            LIMIT ${count} OFFSET ${offset}
+        </if>
+    </select>
+
+    <select id="countByDownload" parameterType="map" resultType="com.laidback.model.RepositoryDownload">
+        SELECT
+        COUNT(*)
+        FROM repository_download
+        WHERE user_seq = #{userSeq}
+    </select>
+
+    <select id="appDown" parameterType="map" resultType="int">
+        SELECT COUNT(*)
+        FROM repository_download
+        WHERE user_seq = #{userSeq}
+        AND repository_seq = #{marketId}
+    </select>
+
+    <select id="countByUser" parameterType="map" resultType="int">
+        SELECT
+            COUNT(*)
+          FROM repository_download
+         WHERE 1 = 1
+           AND user_seq = #{userSeq}
+    </select>
+
+    <select id="findByUser" parameterType="map" resultType="com.laidback.model.RepositoryDownload">
+        SELECT
+            rd.*
+          , rd.repository_seq as repositorySeq
+          , r.app_name as appName
+          FROM repository_download rd
+            LEFT OUTER JOIN repository r ON rd.repository_seq = r.seq
+         WHERE 1 = 1
+           AND rd.user_seq = #{userSeq}
+        <choose>
+            <when test="order == 0">
+                ORDER BY ${sort} ASC
+            </when>
+            <when test="order == 1">
+                ORDER BY ${sort} DESC
+            </when>
+        </choose>
+        <if test="offset != null and count != null">
+            LIMIT ${count} OFFSET ${offset}
+        </if>
+    </select>
+
+</mapper>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.laidback.mapper.DivOneMapper">
+    <select id="count" parameterType="map" resultType="int">
+        SELECT
+        COUNT(*)
+        FROM div_one di
+        WHERE 1 = 1
+    </select>
+
+    <select id="find" parameterType="map" resultType="com.laidback.model.DivOne">
+        SELECT
+        *
+        FROM div_one di
+        WHERE 1 = 1
+        <choose>
+            <when test="order == 0">
+                ORDER BY ${sort} ASC
+            </when>
+            <when test="order == 1">
+                ORDER BY ${sort} DESC
+            </when>
+        </choose>
+        <!--<if test="offset != null and count != null">-->
+            <!--LIMIT ${count} OFFSET ${offset}-->
+        <!--</if>-->
+    </select>
+    <select id="sendFind" parameterType="map" resultType="com.laidback.model.DivOne">
+        SELECT
+        *
+        FROM div_one di
+        WHERE 1 = 1
+        <if test="divSeq != null">
+            AND seq IN (${divSeq})
+            <!--<foreach item="seq" collection="divSeq" separator="," open="(" close=")">-->
+                <!--#{seq}-->
+            <!--</foreach>-->
+        </if>
+        <choose>
+            <when test="order == 0">
+                ORDER BY ${sort} ASC
+            </when>
+            <when test="order == 1">
+                ORDER BY ${sort} DESC
+            </when>
+        </choose>
+        <!--<if test="offset != null and count != null">-->
+        <!--LIMIT ${count} OFFSET ${offset}-->
+        <!--</if>-->
+    </select>
+</mapper>

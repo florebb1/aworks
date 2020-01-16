@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.laidback.mapper.CompanyMapper">
+
+    <!-- 계약회사 리스트 카운트 조회 -->
+    <select id="count" parameterType="map" resultType="int">
+        SELECT
+        COUNT(*)
+        FROM company com
+        LEFT OUTER JOIN member u ON com.user_seq = u.seq
+        WHERE 1 = 1
+        AND com.delete_datetime is null
+        <if test="startDate != null">
+            AND to_char(com.create_datetime,'YYYY-MM-DD') <![CDATA[ >= ]]> #{startDate}
+        </if>
+        <if test="endDate != null">
+            AND to_char(com.create_datetime,'YYYY-MM-DD') <![CDATA[ <= ]]> #{endDate}
+        </if>
+        <if test="searchWord != null and searchWord != ''">
+            <choose>
+                <when test="searchType == 'comName' ">
+                    AND com.com_name LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <when test="searchType == 'comPhone' ">
+                    AND com.com_phone LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <when test="searchType == 'serviceName' ">
+                    AND com.com_email LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <otherwise>
+                    AND (com.com_name LIKE CONCAT('%',#{searchWord}, '%') or com.com_phone LIKE CONCAT('%',#{searchWord}, '%') or com.com_email LIKE CONCAT('%',#{searchWord}, '%') )
+                </otherwise>
+            </choose>
+        </if>
+    </select>
+
+    <!-- 계약회사 리스트 조회 -->
+    <select id="find" parameterType="map" resultType="com.laidback.model.Company">
+        SELECT
+        com.*
+        , u.seq as userSeq
+        , u.name as userName
+        , u.login_id as loginId
+        ,(select count(*) from com_contract cc where com_seq = com.seq and cc.delete_datetime is null ) as countContract
+        FROM company com
+        LEFT OUTER JOIN member u ON com.user_seq = u.seq
+        WHERE 1 = 1
+        AND com.delete_datetime is null
+        <if test="startDate != null">
+            AND to_char(com.create_datetime,'YYYY-MM-DD') <![CDATA[ >= ]]> #{startDate}
+        </if>
+        <if test="endDate != null">
+            AND to_char(com.create_datetime,'YYYY-MM-DD') <![CDATA[ <= ]]> #{endDate}
+        </if>
+        <if test="searchWord != null and searchWord != ''">
+            <choose>
+                <when test="searchType == 'comName' ">
+                    AND com.com_name LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <when test="searchType == 'comPhone' ">
+                    AND com.com_phone LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <when test="searchType == 'serviceName' ">
+                    AND com.com_email LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <otherwise>
+                    AND (com.com_name LIKE CONCAT('%',#{searchWord}, '%') or com.com_phone LIKE CONCAT('%',#{searchWord}, '%') or com.com_email LIKE CONCAT('%',#{searchWord}, '%') )
+                </otherwise>
+            </choose>
+        </if>
+        <choose>
+            <when test="order == 1 and sort == 'com_name'">
+                ORDER BY com.com_name collate "C" DESC, com.seq DESC
+            </when>
+            <when test="order == 0 and sort == 'com_name'">
+                ORDER BY com.com_name collate "C" ASC, com.seq ASC
+            </when>
+            <when test="order == 0 and sort == 'create_datetime'">
+                ORDER BY com.create_datetime ASC, com.seq ASC
+            </when>
+            <when test="order == 0 and sort == 'com_phone'">
+                ORDER BY NULLIF(com_phone,'') ASC NULLS LAST, com.seq ASC
+            </when>
+            <when test="order == 1 and sort == 'com_phone'">
+                ORDER BY NULLIF(com_phone,'') DESC NULLS LAST, com.seq DESC
+            </when>
+            <when test="order == 0 and sort == 'com_email'">
+                ORDER BY NULLIF(com_email,'') ASC NULLS LAST, com.seq ASC
+            </when>
+            <when test="order == 1 and sort == 'com_email'">
+                ORDER BY NULLIF(com_email,'') DESC NULLS LAST, com.seq DESC
+            </when>
+            <when test="order == 1 and sort == 'create_datetime'">
+                ORDER BY com.create_datetime DESC, com.seq DESC
+            </when>
+            <when test="order == 0 and sort == 'countContract'">
+                ORDER BY countContract ASC NULLS LAST, com.seq ASC
+            </when>
+            <when test="order == 1 and sort == 'countContract'">
+                ORDER BY countContract DESC NULLS LAST, com.seq DESC
+            </when>
+        </choose>
+        <if test="offset != null and count != null">
+            LIMIT ${count} OFFSET ${offset}
+        </if>
+    </select>
+
+
+    <!-- 계약회사 상세 정보 조회 -->
+    <select id="findByCompany" parameterType="map" resultType="com.laidback.model.Company">
+        SELECT
+            com.*
+          , u.name as userName
+          , u.login_id as loginId
+          FROM company com
+            LEFT OUTER JOIN member u ON com.user_seq = u.seq
+         WHERE com.seq = ${comSeq}
+    </select>
+
+    <!-- 계약회사 검색 (회사명으로 조회) -->
+    <select id="searchForCompanyList" parameterType="map" resultType="com.laidback.model.Company">
+        SELECT
+            com.*
+          FROM company com
+         WHERE com.com_name LIKE CONCAT('%',#{searchCom}, '%') AND com.delete_datetime is null
+    </select>
+    <select id="companyNameSearch" parameterType="map" resultType="com.laidback.model.Company">
+        SELECT
+            com.*
+          FROM company com
+         WHERE com.com_name LIKE CONCAT('%',#{companyName}, '%') AND com.delete_datetime is null
+    </select>
+
+    <select id="getExeclDownList" parameterType="map" resultType="com.laidback.model.Company">
+        SELECT
+        com.*
+        , u.seq as userSeq
+        , u.name as userName
+        , u.login_id as loginId
+        ,(select count(*) from com_contract cc where com_seq = com.seq and cc.delete_datetime is null ) as countContract
+        FROM company com
+        LEFT OUTER JOIN member u ON com.user_seq = u.seq
+        WHERE 1 = 1 AND com.delete_datetime is null
+        <if test="companyList != null">
+            AND com.seq IN
+            <foreach item="seq" collection="companyList" separator="," open="(" close=")">
+                #{seq}
+            </foreach>
+        </if>
+        <choose>
+            <when test="order == 1 and sort == 'com_name'">
+                ORDER BY com.com_name collate "C" DESC, com.seq DESC
+            </when>
+            <when test="order == 0 and sort == 'com_name'">
+                ORDER BY com.com_name collate "C" ASC, com.seq ASC
+            </when>
+            <when test="order == 0 and sort == 'create_datetime'">
+                ORDER BY com.create_datetime ASC, com.seq ASC
+            </when>
+            <when test="order == 0 and sort == 'com_phone'">
+                ORDER BY NULLIF(com_phone,'') ASC NULLS LAST, com.seq ASC
+            </when>
+            <when test="order == 1 and sort == 'com_phone'">
+                ORDER BY NULLIF(com_phone,'') DESC NULLS LAST, com.seq DESC
+            </when>
+            <when test="order == 0 and sort == 'com_email'">
+                ORDER BY NULLIF(com_email,'') ASC NULLS LAST, com.seq ASC
+            </when>
+            <when test="order == 1 and sort == 'com_email'">
+                ORDER BY NULLIF(com_email,'') DESC NULLS LAST, com.seq DESC
+            </when>
+            <when test="order == 1 and sort == 'create_datetime'">
+                ORDER BY com.create_datetime DESC, com.seq DESC
+            </when>
+            <when test="order == 0 and sort == 'countContract'">
+                ORDER BY countContract ASC NULLS LAST, com.seq ASC
+            </when>
+            <when test="order == 1 and sort == 'countContract'">
+                ORDER BY countContract DESC NULLS LAST, com.seq DESC
+            </when>
+        </choose>
+    </select>
+
+    <select id="findByCompanySeq" parameterType="map" resultType="com.laidback.model.Company">
+        SELECT
+        com.*
+        FROM company com
+        LEFT OUTER JOIN member u ON com.user_seq = u.seq
+        WHERE com.user_seq = #{userSeq}
+        ORDER BY com.create_datetime DESC
+        LIMIT 1
+    </select>
+
+    <select id="findAll" resultType="com.laidback.model.Company">
+        select * from company where delete_datetime is null
+    </select>
+    <select id="getAllUse" parameterType="int" resultType="int">
+        select count(*) from com_license_use where com_seq = #{seq}
+    </select>
+    <select id="dupleName" parameterType="string" resultType="int">
+        select count(*) from company where com_name = #{value} and delete_datetime is null
+    </select>
+</mapper>

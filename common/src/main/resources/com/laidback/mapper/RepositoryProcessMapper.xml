@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.laidback.mapper.RepositoryProcessMapper">
+    <select id="findByProcessTypes" parameterType="int" resultType="com.laidback.model.RepositoryProcess">
+        SELECT
+            *
+          FROM repository_process rp
+         WHERE 1 = 1
+           AND rp.repository_seq = #{seq}
+    </select>
+
+</mapper>

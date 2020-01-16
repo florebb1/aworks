@@ -1,0 +1,121 @@
+group 'com.laidback'
+version '0.0.1-SNAPSHOT'
+
+apply plugin: 'java'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'findbugs'
+apply plugin: 'pmd'
+
+jar {
+    baseName = 'portal-common'
+    version = '0.0.1-SNAPSHOT'
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    maven { url 'http://repo1.maven.org/maven2' }
+    jcenter { url "http://jcenter.bintray.com/" }
+}
+
+buildscript {
+    ext {
+        springBootVersion = '1.4.2.RELEASE'
+    }
+    repositories {
+        maven { url 'http://repo1.maven.org/maven2' }
+        jcenter { url "http://jcenter.bintray.com/" }
+
+
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+}
+
+dependencies {
+    compile('org.springframework.boot:spring-boot-starter')
+    compile group: 'org.springframework.boot', name: 'spring-boot-actuator'
+    compile("org.springframework.boot:spring-boot-starter-data-jpa")
+    compile("org.springframework.boot:spring-boot-starter-security")
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-websocket'
+    compile group: 'org.springframework.boot', name: 'spring-boot-autoconfigure'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-mail'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-jetty'
+    compile(group: 'org.springframework.boot', name: 'spring-boot-starter-web')
+    compile("org.springframework:spring-tx")
+    compile("org.springframework.boot:spring-boot-starter-freemarker")
+    compile('org.freemarker:freemarker:2.3.23')
+    compile("kr.pe.kwonnam.freemarker:freemarker-template-inheritance:0.4.RELEASE")
+    compile('org.mybatis.spring.boot:mybatis-spring-boot-starter:1.1.1')
+    compile group: 'mysql', name: 'mysql-connector-java'
+    compile("org.springframework:spring-jdbc:4.1.5.RELEASE")
+    compile("org.apache.tomcat:tomcat-jdbc:7.0.50")
+    compile("org.springframework.boot:spring-boot-starter-logging")
+    compile "org.projectlombok:lombok:1.16.6"
+    compile('org.apache.commons:commons-lang3:3.1')
+    compile('commons-io:commons-io:2.4')
+    compile("cglib:cglib-nodep:3.1")
+    compile 'com.google.code.gson:gson:2.2.4'
+    compile 'com.amazonaws:aws-java-sdk:1.11.133'
+    compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
+    compile group: 'commons-io', name: 'commons-io', version: '2.5'
+    compile group: 'com.esotericsoftware.yamlbeans', name: 'yamlbeans', version: '1.06'
+
+    compile group: 'org.apache.httpcomponents', name: 'httpcore', version: '4.4.5'
+    compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.2'
+    compile group: 'org.apache.httpcomponents', name: 'fluent-hc', version: '4.5.2'
+    compile group: 'com.rabbitmq', name: 'amqp-client', version: '2.3.1'
+    compile("org.springframework.boot:spring-boot-starter-amqp")
+    compile group: 'com.itextpdf', name: 'itextpdf', version: '5.5.10'
+    compile group: 'com.itextpdf.tool', name: 'xmlworker', version: '5.5.10'
+    compile group: 'org.jsoup', name: 'jsoup', version: '1.10.2'
+    compile group: 'org.msgpack', name: 'msgpack', version: '0.6.12'
+
+    compile group: 'org.springframework.social', name: 'spring-social-security', version: '1.1.4.RELEASE'
+    compile group: 'org.springframework.social', name: 'spring-social-core', version: '1.1.4.RELEASE'
+    compile group: 'org.springframework.social', name: 'spring-social-facebook', version: '2.0.3.RELEASE'
+    compile group: 'com.google.guava', name: 'guava', version: '24.0-jre'
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+    compile("io.jsonwebtoken:jjwt:0.6.0")
+    compile 'org.postgresql:postgresql:9.4.1209'
+    
+}
+
+test {
+    jvmArgs '-Dspring.profiles.active=test'
+    reports {
+        junitXml.enabled = true
+        junitXml.destination = file("${rootProject.projectDir}/build/test-reports")
+        html.enabled = false
+    }
+}
+
+pmd {
+    ignoreFailures = true
+    ruleSetConfig = rootProject.resources.text.fromFile("${rootProject.projectDir}/config/ruleset.xml")
+}
+
+pmdMain {
+    reports {
+        xml.enabled = true
+        xml.destination = file("${rootProject.projectDir}/build/pmd-${project.name}.xml")
+        html.enabled = false
+    }
+}
+
+findbugs {
+    ignoreFailures = true
+}
+
+findbugsMain {
+
+    excludeFilter = file("${rootProject.projectDir}/config/findbugs-exclude.xml")
+    reports {
+        xml.enabled = true
+        xml.destination = file("${rootProject.projectDir}/build/findbugs-${project.name}.xml")
+        html.enabled = false
+    }
+}

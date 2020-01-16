@@ -1,0 +1,106 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
+group 'com.laidback'
+version '0.2.1'
+
+buildscript {
+
+    ext {
+        springBootVersion = '1.4.2.RELEASE'
+    }
+
+    repositories {
+        maven { url 'http://repo1.maven.org/maven2' }
+        jcenter { url "http://jcenter.bintray.com/" }
+    }
+
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath 'org.springframework:springloaded:1.2.5.RELEASE'
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'war'
+//apply plugin: 'findbugs'
+//apply plugin: 'pmd'
+apply plugin: 'idea'
+
+idea{
+    module{
+        inheritOutputDirs = false
+        outputDir = file("$buildDir/classes/main/")
+    }
+}
+
+springBoot {
+    mainClass = 'com.laidback.Application'
+}
+
+repositories {
+    maven { url 'http://repo1.maven.org/maven2' }
+    jcenter { url "http://jcenter.bintray.com/" }
+}
+
+configurations {
+    providedRuntime
+}
+
+jar {
+    baseName = 'portal-apps'
+}
+
+dependencies {
+    compile project(':common')
+    compile group: 'com.amazonaws', name: 'aws-java-sdk-sqs', version: '1.11.78'
+    compile('org.springframework.boot:spring-boot-devtools')
+    compile files('libs/log4sql.jar')
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+    compile group: 'org.apache.poi', name: 'poi', version: '3.9'
+    compile group: 'org.apache.poi', name: 'poi-ooxml', version: '3.9'
+    compile("org.springframework.boot:spring-boot-starter-mail")
+
+}
+
+war {
+    baseName = 'portal-apps'
+}
+
+test {
+    jvmArgs '-Dspring.profiles.active=dev'
+    reports {
+        junitXml.enabled = true
+        html.enabled = false
+    }
+}
+
+
+task checkWin() {
+    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+        task pathingJar(type: Jar) {
+            dependsOn configurations.runtime
+            appendix = 'pathing'
+
+            doFirst {
+                manifest {
+                    attributes "Class-Path": configurations.runtime.files.collect {it.toURL().toString().replaceFirst("file:/", '/')}.join(" ")
+                }
+            }
+        }
+
+        bootRun{
+            addResources = true
+            systemProperties System.properties
+            dependsOn pathingJar
+            doFirst {
+                classpath = files("$buildDir/classes/main", "$buildDir/resources/main", pathingJar.archivePath)
+            }
+        }
+    } else {
+        bootRun{
+            addResources = true
+            systemProperties System.properties
+        }
+    }
+}

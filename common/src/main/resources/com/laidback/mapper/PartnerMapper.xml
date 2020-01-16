@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.laidback.mapper.PartnerMapper">
+
+    <select id="count" parameterType="map" resultType="int">
+        SELECT
+            COUNT(*)
+          FROM partner
+         WHERE 1 = 1
+           AND delete_datetime IS NULL
+        <if test="startDate != null">
+            AND to_char(create_datetime,'YYYY-MM-DD') <![CDATA[ >= ]]> #{startDate}
+        </if>
+        <if test="endDate != null">
+            AND to_char(create_datetime,'YYYY-MM-DD') <![CDATA[ <= ]]> #{endDate}
+        </if>
+        <if test="searchWord != null">
+            <choose>
+                <when test="searchType == 'name' ">
+                    AND name LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <when test="searchType == 'address' ">
+                    AND address LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <when test="searchType == 'tel' ">
+                    AND tel LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <otherwise>
+                    AND (name LIKE CONCAT('%',#{searchWord}, '%') or address LIKE CONCAT('%',#{searchWord}, '%') or tel LIKE CONCAT('%',#{searchWord}, '%') )
+                </otherwise>
+            </choose>
+        </if>
+    </select>
+
+    <select id="find" parameterType="map" resultType="com.laidback.model.Partner">
+        SELECT
+            *
+          FROM partner
+         WHERE 1 = 1
+           AND delete_datetime IS NULL
+        <if test="startDate != null">
+            AND to_char(create_datetime,'YYYY-MM-DD') <![CDATA[ >= ]]> #{startDate}
+        </if>
+        <if test="endDate != null">
+            AND to_char(create_datetime,'YYYY-MM-DD') <![CDATA[ <= ]]> #{endDate}
+        </if>
+        <if test="searchWord != null">
+            <choose>
+                <when test="searchType == 'name' ">
+                    AND name LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <when test="searchType == 'address' ">
+                    AND address LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <when test="searchType == 'tel' ">
+                    AND tel LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <otherwise>
+                    AND (name LIKE CONCAT('%',#{searchWord}, '%') or address LIKE CONCAT('%',#{searchWord}, '%') or tel LIKE CONCAT('%',#{searchWord}, '%') )
+                </otherwise>
+            </choose>
+        </if>
+        <choose>
+            <when test="order == 0">
+                ORDER BY ${sort} ASC
+            </when>
+            <when test="order == 1">
+                ORDER BY ${sort} DESC
+            </when>
+        </choose>
+        <if test="offset != null and count != null">
+            LIMIT ${count} OFFSET ${offset}
+        </if>
+    </select>
+
+    <select id="findByPartner" parameterType="map" resultType="com.laidback.model.Partner">
+        SELECT
+            *
+          FROM partner
+         WHERE 1 = 1
+           AND seq = #{seq}
+    </select>
+
+    <select id="getExeclDownList" parameterType="map" resultType="com.laidback.model.Partner">
+        SELECT
+            *
+          FROM partner
+         WHERE 1 = 1
+        <if test="partnerList != null">
+            AND seq IN
+            <foreach item="seq" collection="partnerList" separator="," open="(" close=")">
+                #{seq}
+            </foreach>
+        </if>
+        ORDER BY create_datetime DESC
+    </select>
+</mapper>

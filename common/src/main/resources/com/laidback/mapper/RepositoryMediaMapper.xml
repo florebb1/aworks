@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.laidback.mapper.RepositoryMediaMapper">
+    <resultMap id="repositoryMediaResultMap" type="com.laidback.model.RepositoryMedia">
+        <id property="id" column="id"/>
+    </resultMap>
+    <select id="search" parameterType="map" resultType="com.laidback.model.RepositoryMedia">
+        SELECT
+          *
+        FROM repository_media
+        WHERE repository_seq = #{marketId}
+        AND media_type = 1
+        ORDER BY media_type desc
+    </select>
+</mapper>

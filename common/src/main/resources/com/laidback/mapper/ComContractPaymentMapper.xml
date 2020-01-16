@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.laidback.mapper.ComContractPaymentMapper">
+
+    <!-- 결제내역 리스트 카운트 조회 -->
+    <select id="count" parameterType="map" resultType="int">
+        SELECT
+            COUNT(*)
+          FROM com_contract_payment ccp
+         WHERE ccp.com_seq = #{comSeq}
+           AND ccp.delete_datetime IS NULL
+        <if test="startDate != null">
+            AND to_char(ccp.create_datetime,'YYYY-MM-DD') <![CDATA[ >= ]]> #{startDate}
+        </if>
+        <if test="endDate != null">
+            AND to_char(ccp.create_datetime,'YYYY-MM-DD') <![CDATA[ <= ]]> #{endDate}
+        </if>
+        <if test="searchWord != null and searchWord != ''">
+            <choose>
+                <when test="searchType == 'payment' ">
+                    AND ccp.payment LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <otherwise>
+                    AND ( ccp.payment LIKE CONCAT('%',#{searchWord}, '%') )
+                </otherwise>
+            </choose>
+        </if>
+    </select>
+
+    <!-- 결제내역 조회 -->
+    <select id="find" parameterType="map" resultType="com.laidback.model.ComContractPayment">
+        SELECT
+            ccp.*
+          FROM com_contract_payment ccp
+         WHERE ccp.com_seq = #{comSeq}
+           AND ccp.delete_datetime IS NULL
+        <if test="startDate != null">
+            AND to_char(ccp.create_datetime,'YYYY-MM-DD') <![CDATA[ >= ]]> #{startDate}
+        </if>
+        <if test="endDate != null">
+            AND to_char(ccp.create_datetime,'YYYY-MM-DD') <![CDATA[ <= ]]> #{endDate}
+        </if>
+        <if test="searchWord != null and searchWord != ''">
+            <choose>
+                <when test="searchType == 'payment' ">
+                    AND ccp.payment LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <otherwise>
+                    AND ( ccp.payment LIKE CONCAT('%',#{searchWord}, '%') )
+                </otherwise>
+            </choose>
+        </if>
+        <choose>
+            <when test="order == 0">
+                ORDER BY ${sort} ASC
+            </when>
+            <when test="order == 1">
+                ORDER BY ${sort} DESC
+            </when>
+        </choose>
+        <if test="offset != null and count != null">
+            LIMIT ${count} OFFSET ${offset}
+        </if>
+    </select>
+
+    <update id="updatePayment" parameterType="map">
+        UPDATE com_contract_payment
+           SET payment = #{payment}
+             , update_datetime = NOW()
+         WHERE seq = #{seq}
+    </update>
+
+    <select id="findBySeq" parameterType="map" resultType="com.laidback.model.ComContractPayment">
+        SELECT * FROM com_contract_payment WHERE seq = #{seq}
+    </select>
+
+</mapper>

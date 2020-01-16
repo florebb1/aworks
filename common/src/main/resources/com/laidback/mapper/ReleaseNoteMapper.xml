@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.laidback.mapper.ReleaseNoteMapper">
+    <select id="count" parameterType="map" resultType="int">
+        SELECT
+        COUNT(*)
+        FROM release_note
+        WHERE 1 = 1
+        AND delete_datetime is null
+
+
+    </select>
+
+    <select id="find" parameterType="map" resultType="com.laidback.model.ReleaseNote">
+        SELECT *
+        FROM release_note a
+        WHERE 1 = 1
+        AND delete_datetime is null
+
+        ORDER BY create_datetime DESC
+        <if test="offset != null and count != null">
+            LIMIT ${count} OFFSET ${offset}
+        </if>
+    </select>
+    <select id="typeFind" parameterType="int" resultType="com.laidback.model.ReleaseNote">
+        SELECT *
+        FROM release_note a
+        WHERE 1 = 1
+        AND delete_datetime is null
+        AND note_type = #{noteType}
+        ORDER BY seq DESC
+
+    </select>
+</mapper>

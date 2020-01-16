@@ -1,0 +1,500 @@
+/*!
+# A.Works Super style
+# Laidback david 2019.01.04
+*/
+
+/* ---------------------------------------------------
+    font import & style
+----------------------------------------------------- */
+@import url('https://fonts.googleapis.com/css?family=Noto+Sans:400,700');
+@import url('https://fonts.googleapis.com/css?family=Nanum+Gothic');
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+/* ---------------------------------------------------
+    general style
+----------------------------------------------------- */
+html {
+    margin:0;
+    padding:0;
+    font-size:14px;
+    font-family: 'Noto Sans', sans-serif;
+}
+body {
+    margin:0;
+    padding:0;
+    font-size:14px;
+    font-family: 'Noto Sans', sans-serif;
+}
+.wrapper {
+    width: 100vw;
+    height:100vh;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: stretch;
+    -ms-flex-align: stretch;
+    align-items: stretch;
+}
+
+/* ---------------------------------------------------
+    login style
+----------------------------------------------------- */
+.login-wrapper {
+    width: 100vw;
+    height:100vh;
+    /* background-image: url('../images/background.jpg');
+    background-size:cover;
+    background-position: center center;
+    background-size:cover;
+    background-repeat: no-repeat; */
+}
+.login-body-wrapper {
+    width: 100vw;
+    height:100vh;
+    background-color:#00424d;
+}
+.form-signin {
+    width: 100%;
+    max-width: 420px;
+    padding:50px 35px 80px;
+    margin:0 auto;
+    border-radius:1em;
+    color:#acb1b3;
+}
+.form-signin p {
+    color:#8c9699;
+}
+.form-signin a {
+    color:#bec3c5;
+}
+.form-signin a:hover {
+    color:#acb1b3;
+    text-decoration:none;
+}
+.form-label-group {
+    position: relative;
+    margin-bottom: 1rem;
+}
+.form-label-group > input,
+.form-label-group > label {
+    height: 3.125rem;
+    padding: .75rem;
+    border-radius:0;
+}
+.form-label-group > label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: block;
+    width: 100%;
+    margin-bottom: 0; /* Override default `<label>` margin */
+    line-height: 1.5;
+    pointer-events: none;
+    cursor: text; /* Match the input under the label */
+    border: 1px solid transparent;
+    border-radius:0rem;
+    transition: all .1s ease-in-out;
+}
+.form-label-group input::-webkit-input-placeholder {
+    color: transparent;
+}
+.form-label-group input:-ms-input-placeholder {
+    color: transparent;
+}
+.form-label-group input::-ms-input-placeholder {
+    color: transparent;
+}
+.form-label-group input::-moz-placeholder {
+    color: transparent;
+}
+.form-label-group input::placeholder {
+    color: transparent;
+}
+.form-label-group input:not(:placeholder-shown) {
+    padding-top: 1.25rem;
+    padding-bottom: .25rem;
+}
+.form-label-group input:not(:placeholder-shown) ~ label {
+    padding-top: .25rem;
+    padding-bottom: .25rem;
+    font-size: 12px;
+}
+.form-label-group .form-control {
+    color:#ffffff;
+    background-color:#093036;
+    border:0;
+}
+/* ---------------------------------------------------
+    navbar style
+----------------------------------------------------- */
+.navbar {
+    background:#00A3AD;
+    border-bottom:0px solid #00A3AD;
+    border-radius: 0;
+    position: fixed;
+    top:0;
+    left:0;
+    right:0;
+    height:58px;
+    z-index:10;
+    padding:0.5rem 10px;
+    -webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.2);
+    -moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.2);
+    box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.2);
+}
+.navbar-btn {
+    box-shadow: none;
+    outline: none !important;
+    border: none;
+}
+.line {
+    width: 100%;
+    height: 1px;
+    border-bottom: 1px dashed #ddd;
+    margin: 40px 0;
+}
+i,
+span {
+    display: inline-block;
+}
+
+/* ---------------------------------------------------
+    SIDEBAR style
+----------------------------------------------------- */
+#sidebar.active .sidebar-header strong {
+    display: block;
+}
+#sidebar ul li a {
+    text-align: left;
+}
+#sidebar .sidebar-header {
+    padding:13px 0px;
+    height:58px;
+}
+#sidebar .sidebar-header strong {
+    display: none;
+    font-size: 1.8em;
+}
+#sidebar ul.components {
+    width:220px;
+    padding:58px 0 20px 0;
+}
+#sidebar ul.components > li {
+    border-bottom:1px solid #dddddd;
+}
+#sidebar ul li a {
+    padding: 10px 25px;
+    font-size: 1em;
+    display: block;
+    text-decoration: none;
+    color: #000000;
+}
+#sidebar ul li a:hover {
+    color: #666666;
+}
+#sidebar ul li a i {
+    margin-right: 10px;
+}
+#sidebar ul li.active>a, a[aria-expanded="true"] {
+    color: #666666;
+}
+a[data-toggle="collapse"] {
+    position: relative;
+}
+.dropdown-toggle::after {
+    display: block;
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+}
+ul ul a {
+    font-size: 0.9em !important;
+    padding-left: 30px !important;
+}
+#sidebar ul.components li > ul.list-unstyled {
+    background-color:#f1f1f1;
+}
+#sidebar ul.components li > ul.list-unstyled li {
+    border-top:1px solid #ffffff;
+}
+.copyight {
+    width:220px;
+    padding:10px 25px 25px;
+    font-size:12px;
+    color:#666666;
+}
+/* ---------------------------------------------------
+    CONTENT STYLE
+----------------------------------------------------- */
+
+.content {
+    width: 100%;
+    padding:20px;
+    margin-top:58px;
+    min-height: calc(100vh - 58px);
+    transition: all 0.3s;
+    overflow-x: auto;
+    background-color:#f0f4f7;
+}
+/* .breadcrumb-wrap {
+    border-bottom:1px solid #dddddd;
+} */
+.breadcrumb {
+    padding:0;
+    list-style: none;
+    background-color:transparent !important;
+    border-radius: 0;
+}
+.breadcrumb-item + .breadcrumb-item::before {
+    display: inline-block;
+    padding-right:0.7rem;
+    padding-left:0.3rem;
+    color: #acb7c5;
+    content: ">";
+    font-size:11px;
+    font-family: 'Nanum Gothic', sans-serif;
+    font-weight: 900;
+    vertical-align:middle;
+}
+.breadcrumb-item a {
+    color: #99a3b1;
+}
+.breadcrumb-item.active {
+    color: #000000;
+}
+.btn-light {
+    border:1px solid #dddddd;
+}
+.table {
+    border-bottom:1px solid #dddddd;
+    color:#666666;
+    background-color: #ffffff;
+    -webkit-box-shadow: 1px 1px 3px 0px rgba(0,0,0,0.1);
+    -moz-box-shadow: 1px 1px 3px 0px rgba(0,0,0,0.1);
+    box-shadow: 1px 1px 3px 0px rgba(0,0,0,0.1);
+    border-radius:5px;
+}
+.table thead th {
+    background-color:#4a5863;
+    color:#ffffff;
+    padding:1rem 0.75rem;
+    border-bottom:0px;
+}
+.table tbody tr:hover {
+    background-color:#f0f4f7;
+    transition: all .1s ease-in-out;
+}
+.pagination a {
+    color:#666666;
+}
+.sample-box {
+    min-height:180px;
+    background-color:#ffffff;
+    border:1px solid #dddddd;
+    padding:10px;
+}
+.sidebar-icon .img-thumbnail {
+    width:32px;
+    height:32px;
+    margin-right:5px;
+    border-radius:50%;
+    padding:0;
+    border:0;
+}
+
+/* ---------------------------------------------------
+    MEDIAQUERIES
+----------------------------------------------------- */
+@media (min-width: 769px) {
+    #sidebar {
+        min-width: 220px;
+        max-width: 220px;
+        background: #ffffff;
+        transition: all 0.3s;
+        border-right:1px solid #dddddd;
+        overflow-x:auto;
+        -webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.2);
+        -moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.2);
+        box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.2);
+    }
+    #sidebar .sidebar-logo {
+        display: none;
+    }
+    #sidebar i {
+        margin-top:5px;
+        padding:5px;
+    }
+    #sidebar .sidebar-icon {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-orient: horizontal;
+        -ms-flex-direction: row;
+        flex-direction: row;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+    }
+    #sidebar .sidebar-icon a {
+        margin:5px;
+        text-decoration:none;
+        color:#ffffff;
+    }
+}
+@media (max-width: 768px) {
+    #sidebar {
+        transition: all 0.3s;
+        background: #ffffff;
+        width:0;
+        -webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.2);
+        -moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.2);
+        box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.2);
+    }
+    #sidebar .sidebar-header {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-flex: 1;
+        -ms-flex: 1;
+        flex-grow: 1;
+        margin-left:15px;
+    }
+    #sidebar i {
+        margin-top:5px;
+        padding:5px;
+    }
+    #sidebar i.icon-menu {
+        margin-left:10px;
+    }
+    #sidebar i.icon-logout {
+        margin-right:10px;
+    }
+    #sidebar .sidebar-icon {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-orient: horizontal;
+        -ms-flex-direction: row;
+        flex-direction: row;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+    }
+    #sidebar .sidebar-icon a {
+        margin:5px;
+    }
+    #sidebar.active {
+        margin-left: -220px;
+        display: block;
+        padding:0;
+        margin:0;
+        position: fixed;
+        left:0;
+        top:58px;
+        bottom:0;
+        width:220px;
+        background-color: #ffffff;
+        z-index:1;
+        -webkit-box-shadow: 0px 0px 30px 0px rgba(0,0,0,0.2);
+        -moz-box-shadow: 0px 0px 30px 0px rgba(0,0,0,0.2);
+        box-shadow: 0px 0px 30px 0px rgba(0,0,0,0.2);
+        transition-delay: all .5s ease-in-out;
+        overflow-x:auto;
+    }
+    #sidebar ul.components {
+        padding:0;
+        display: none;
+    }
+    #sidebar.active ul.components {
+        padding:0;
+        display:block;
+    }
+    .content {
+        width: 100%;
+        position: fixed;
+        top:0;
+        left:0;
+        right:0;
+        bottom:0;
+
+    }
+}
+
+/* ---------------------------------------------------
+    input textarea focus Style
+----------------------------------------------------- */
+textarea:focus,
+.custom-select:focus,
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="datetime"]:focus,
+input[type="datetime-local"]:focus,
+input[type="date"]:focus,
+input[type="month"]:focus,
+input[type="time"]:focus,
+input[type="week"]:focus,
+input[type="number"]:focus,
+input[type="email"]:focus,
+input[type="url"]:focus,
+input[type="search"]:focus,
+input[type="tel"]:focus,
+input[type="color"]:focus,
+.uneditable-input:focus {   
+    border-color: rgba(0,163,173, 0.8);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(0,163,173, 0.6);
+    outline: 0 none;
+}
+
+/* ---------------------------------------------------
+    progress bar Style
+----------------------------------------------------- */
+.progress-bar {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -ms-flex-pack: center;
+    justify-content: center;
+    color: #fff;
+    text-align: center;
+    white-space: nowrap;
+    background-color: rgba(132,189,0,0.75);
+    transition: width 0.6s ease;
+}
+
+/* ---------------------------------------------------
+    Button Style
+----------------------------------------------------- */
+.btn-primary {
+    color: #fff;
+    background-color: #00a3ad;
+    border-color: #00a3ad;
+}
+
+.btn-primary:hover {
+    color: #fff;
+    background-color: #008b92;
+    border-color: #008b92;
+}
+
+.btn-primary:focus, .btn-primary.focus {
+    box-shadow: 0 0 0 0.2rem rgba(0,163,173, 0.5);
+}
+
+.btn-primary.disabled, .btn-primary:disabled {
+    color: #fff;
+    background-color: #00a3ad;
+    border-color: #00a3ad;
+}
+
+.btn-primary:not(:disabled):not(.disabled):active, .btn-primary:not(:disabled):not(.disabled).active,
+.show > .btn-primary.dropdown-toggle {
+    color: #fff;
+    background-color: #008b92;
+    border-color: #008b92;
+}
+
+.btn-primary:not(:disabled):not(.disabled):active:focus, .btn-primary:not(:disabled):not(.disabled).active:focus,
+.show > .btn-primary.dropdown-toggle:focus {
+    box-shadow: 0 0 0 0.2rem rgba(0,163,173, 0.5);
+}

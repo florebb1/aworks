@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.laidback.mapper.ComContractMapper">
+
+    <!-- 계약회사 계약일 정보 조회 (라스트인덱스) -->
+    <select id="findByContractCompanyInfo" parameterType="map" resultType="com.laidback.model.ComContract">
+        SELECT
+            cc.*
+          FROM com_contract cc
+         WHERE cc.com_seq = ${comSeq}
+         ORDER BY cc.create_datetime DESC
+         limit 1
+    </select>
+
+    <!-- 계약회사 히스토리 조회 -->
+    <select id="searchForContHistory" parameterType="map" resultType="com.laidback.model.ComContract">
+        SELECT
+            *
+          FROM com_contract cc
+         WHERE cc.com_seq = ${comSeq}
+         ORDER BY cc.create_datetime DESC
+    </select>
+    <select id="findByCompany" parameterType="int" resultType="com.laidback.model.ComContract">
+        SELECT * from com_contract where com_seq = #{comSeq} order by seq desc
+    </select>
+
+    <select id="count" parameterType="map" resultType="int">
+        SELECT
+        COUNT(*)
+        FROM com_contract com
+        LEFT OUTER JOIN member u ON com.user_seq = u.seq
+        LEFT OUTER JOIN company c on com.com_seq = c.seq
+        WHERE 1 = 1  and com.delete_datetime is null and c.delete_datetime is null
+        <if test="userSeq != null">
+            AND com.user_seq = #{userSeq}
+        </if>
+        <if test="comSeq != null">
+            AND com.com_seq = #{comSeq}
+        </if>
+        <if test="comName != null">
+            AND c.com_name = #{comName}
+        </if>
+        <if test="startDate != null">
+            AND to_char(com.contract_start,'YYYY-MM-DD') <![CDATA[ >= ]]> #{startDate}
+        </if>
+        <if test="endDate != null">
+            AND to_char(com.contract_end,'YYYY-MM-DD') <![CDATA[ <= ]]> #{endDate}
+        </if>
+        <if test="searchWord != null and searchWord != ''">
+            <choose>
+                <when test="searchType == 'comName' ">
+                    AND c.com_name LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <when test="searchType == 'contractIctName' ">
+                    AND com.contract_ict_name LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <when test="searchType == 'contractNumber' ">
+                    AND com.contract_number LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <when test="searchType == 'contractName' ">
+                    AND com.contract_name LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <when test="searchType == 'userName' ">
+                    AND u.name LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <otherwise>
+                    AND (c.com_name LIKE CONCAT('%',#{searchWord}, '%') or com.contract_ict_name LIKE CONCAT('%',#{searchWord}, '%') or com.contract_number LIKE CONCAT('%',#{searchWord}, '%') )
+                </otherwise>
+            </choose>
+        </if>
+        <if test="contractStatus != null and contractStatus > 0">
+            <choose>
+                <when test="contractStatus == 1 ">
+                    AND to_char(com.contract_start,'YYYY-MM-DD') <![CDATA[ > ]]> #{today}
+                </when>
+                <when test="contractStatus == 2 ">
+                    AND to_char(com.contract_start,'YYYY-MM-DD') <![CDATA[ <= ]]> #{today} and to_char(com.contract_end,'YYYY-MM-DD') <![CDATA[ >= ]]> #{today}
+                </when>
+                <when test="contractStatus == 3 ">
+                    AND to_char(com.contract_end,'YYYY-MM-DD') <![CDATA[ < ]]> #{today}
+                </when>
+            </choose>
+        </if>
+    </select>
+
+    <!-- 계약회사 리스트 조회 -->
+    <select id="find" parameterType="map" resultType="com.laidback.model.ComContract">
+        SELECT
+        com.*
+        , u.seq as userSeq
+        , u.name as userName
+        , u.login_id as loginId
+        ,(select count(*) from com_license where com_contract_seq = com.seq) as countLicense
+        , c.com_name as comName,
+        case when to_char(com.contract_start,'YYYY-MM-DD') <![CDATA[ > ]]> #{today} then 'A'
+        when to_char(com.contract_start,'YYYY-MM-DD') <![CDATA[ <= ]]> #{today} and to_char(com.contract_end,'YYYY-MM-DD') <![CDATA[ >= ]]> #{today} then 'B'
+        when to_char(com.contract_end,'YYYY-MM-DD') <![CDATA[ < ]]> #{today} then 'C'
+        end as strStatus
+        FROM com_contract com
+        LEFT OUTER JOIN member u ON com.user_seq = u.seq
+        LEFT JOIN company c on com.com_seq = c.seq
+        WHERE 1 = 1 and com.delete_datetime is null and c.delete_datetime is null
+        <if test="userSeq != null">
+            AND com.user_seq = #{userSeq}
+        </if>
+        <if test="comSeq != null">
+            AND com.com_seq = #{comSeq}
+        </if>
+        <if test="comName != null">
+            AND c.com_name = #{comName}
+        </if>
+        <if test="startDate != null">
+            AND to_char(com.contract_start,'YYYY-MM-DD') <![CDATA[ >= ]]> #{startDate}
+        </if>
+        <if test="endDate != null">
+            AND to_char(com.contract_end,'YYYY-MM-DD') <![CDATA[ <= ]]> #{endDate}
+        </if>
+        <if test="searchWord != null and searchWord != ''">
+            <choose>
+                <when test="searchType == 'comName' ">
+                    AND c.com_name LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <when test="searchType == 'contractIctName' ">
+                    AND com.contract_ict_name LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <when test="searchType == 'contractNumber' ">
+                    AND com.contract_number LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <when test="searchType == 'contractName' ">
+                    AND com.contract_name LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <when test="searchType == 'userName' ">
+                    AND u.name LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+
+                <otherwise>
+                    AND (c.com_name LIKE CONCAT('%',#{searchWord}, '%') or com.contract_ict_name LIKE CONCAT('%',#{searchWord}, '%') or com.contract_number LIKE CONCAT('%',#{searchWord}, '%') )
+                </otherwise>
+            </choose>
+        </if>
+        <if test="contractStatus != null and contractStatus > 0">
+            <choose>
+                <when test="contractStatus == 1 ">
+                    AND to_char(com.contract_start,'YYYY-MM-DD') <![CDATA[ > ]]> #{today}
+                </when>
+                <when test="contractStatus == 2 ">
+                    AND to_char(com.contract_start,'YYYY-MM-DD') <![CDATA[ <= ]]> #{today} and to_char(com.contract_end,'YYYY-MM-DD') <![CDATA[ >= ]]> #{today}
+                </when>
+                <when test="contractStatus == 3 ">
+                    AND to_char(com.contract_end,'YYYY-MM-DD') <![CDATA[ < ]]> #{today}
+                </when>
+            </choose>
+        </if>
+        <choose>
+            <when test="order == 0 and sort == 'contract_number' ">
+                ORDER BY contract_number collate "C" ASC, com.seq ASC
+            </when>
+            <when test="order == 1 and sort == 'contract_number' ">
+                ORDER BY contract_number collate "C" DESC, com.seq DESC
+            </when>
+
+            <when test="order == 0 and sort == 'c.com_name' ">
+                ORDER BY c.com_name collate "C" ASC, com.seq ASC
+            </when>
+            <when test="order == 1 and sort == 'c.com_name' ">
+                ORDER BY c.com_name collate "C" DESC, com.seq DESC
+            </when>
+
+            <when test="order == 0 and sort == 'contract_name' ">
+                ORDER BY contract_name collate "C" ASC, com.seq ASC
+            </when>
+            <when test="order == 1 and sort == 'contract_name' ">
+                ORDER BY contract_name collate "C" DESC, com.seq DESC
+            </when>
+            <when test="order == 0 and sort == 'contract_start' ">
+                ORDER BY contract_start ASC, com.seq ASC
+            </when>
+            <when test="order == 1 and sort == 'contract_start' ">
+                ORDER BY contract_start DESC, com.seq DESC
+            </when>
+            <when test="order == 0 and sort == 'contract_end' ">
+                ORDER BY contract_end ASC, com.seq ASC
+            </when>
+            <when test="order == 1 and sort == 'contract_end' ">
+                ORDER BY contract_end DESC, com.seq DESC
+            </when>
+            <when test="order == 0 and sort == 'user_name' ">
+                ORDER BY NULLIF(u.name,'') collate "C" ASC NULLS LAST, com.seq ASC
+            </when>
+            <when test="order == 1 and sort == 'user_name' ">
+                ORDER BY NULLIF(u.name,'') collate "C" DESC NULLS LAST, com.seq DESC
+            </when>
+            <when test="order == 0 and sort == 'contract_status' ">
+                ORDER BY strStatus ASC, com.seq ASC
+            </when>
+            <when test="order == 1 and sort == 'contract_status' ">
+                ORDER BY strStatus DESC, com.seq DESC
+            </when>
+            <when test="order == 0 and sort == 'create_datetime'">
+                ORDER BY com.create_datetime ASC, com.seq ASC
+            </when>
+            <when test="order == 1 and sort == 'create_datetime'">
+                ORDER BY com.create_datetime DESC, com.seq DESC
+            </when>
+            <when test="order == 0 and sort == 'contract_ict_name'">
+                ORDER BY NULLIF(com.contract_ict_name,'') collate "C" ASC NULLS LAST, com.seq ASC
+            </when>
+            <when test="order == 1 and sort == 'contract_ict_name'">
+                ORDER BY NULLIF(com.contract_ict_name,'') collate "C" DESC NULLS LAST, com.seq DESC
+            </when>
+        </choose>
+        <if test="offset != null and count != null">
+            LIMIT ${count} OFFSET ${offset}
+        </if>
+    </select>
+    <select id="getLast" parameterType="string" resultType="int">
+      select count(*) from com_contract where com_contract_code LIKE CONCAT(#{value}, '-%')
+    </select>
+    <select id="findByContractNumber" parameterType="string" resultType="int">
+      select count(*) from com_contract where contract_number = #{value}
+    </select>
+    <select id="getAllUse" parameterType="int" resultType="int">
+        select count(*) from com_license_use where com_contract_seq = #{seq}
+    </select>
+    <select id="getExeclDownList" parameterType="map" resultType="com.laidback.model.ComContract">
+        select
+        com.*
+        , u.seq as userSeq
+        , u.name as userName
+        , u.login_id as loginId
+        , u.phone as userPhone
+        ,(select count(*) from com_license where com_contract_seq = com.seq) as countLicense
+        , c.com_name as comName,
+        case when to_char(com.contract_start,'YYYY-MM-DD') <![CDATA[ > ]]> #{today} then 'A'
+        when to_char(com.contract_start,'YYYY-MM-DD') <![CDATA[ <= ]]> #{today} and to_char(com.contract_end,'YYYY-MM-DD') <![CDATA[ >= ]]> #{today} then 'B'
+        when to_char(com.contract_end,'YYYY-MM-DD') <![CDATA[ < ]]> #{today} then 'C'
+        end as strStatus
+        , cl.*
+        from com_contract com
+        LEFT OUTER JOIN member u ON com.user_seq = u.seq
+        LEFT JOIN company c on com.com_seq = c.seq
+        left JOIN com_license cl on com.seq = cl.com_contract_seq and cl.delete_datetime is null
+        where 1=1
+        <if test="contractList != null">
+            AND com.seq IN
+            <foreach item="seq" collection="contractList" separator="," open="(" close=")">
+                #{seq}
+            </foreach>
+        </if>
+        <choose>
+            <when test="order == 0 and sort == 'contract_number' ">
+                ORDER BY contract_number collate "C" ASC, com.seq ASC
+            </when>
+            <when test="order == 1 and sort == 'contract_number' ">
+                ORDER BY contract_number collate "C" DESC, com.seq DESC
+            </when>
+
+            <when test="order == 0 and sort == 'c.com_name' ">
+                ORDER BY c.com_name collate "C" ASC, com.seq ASC
+            </when>
+            <when test="order == 1 and sort == 'c.com_name' ">
+                ORDER BY c.com_name collate "C" DESC, com.seq DESC
+            </when>
+
+            <when test="order == 0 and sort == 'contract_name' ">
+                ORDER BY com.contract_name collate "C" ASC, com.seq ASC
+            </when>
+            <when test="order == 1 and sort == 'contract_name' ">
+                ORDER BY com.contract_name collate "C" DESC, com.seq DESC
+            </when>
+            <when test="order == 0 and sort == 'contract_start' ">
+                ORDER BY contract_start ASC, com.seq ASC
+            </when>
+            <when test="order == 1 and sort == 'contract_start' ">
+                ORDER BY contract_start DESC, com.seq DESC
+            </when>
+            <when test="order == 0 and sort == 'contract_end' ">
+                ORDER BY contract_end ASC, com.seq ASC
+            </when>
+            <when test="order == 1 and sort == 'contract_end' ">
+                ORDER BY contract_end DESC, com.seq DESC
+            </when>
+            <when test="order == 0 and sort == 'user_name' ">
+                ORDER BY NULLIF(u.name,'') collate "C" ASC NULLS LAST, com.seq ASC
+            </when>
+            <when test="order == 1 and sort == 'user_name' ">
+                ORDER BY NULLIF(u.name,'') collate "C" DESC NULLS LAST, com.seq DESC
+            </when>
+            <when test="order == 0 and sort == 'contract_status' ">
+                ORDER BY strStatus ASC, com.seq ASC
+            </when>
+            <when test="order == 1 and sort == 'contract_status' ">
+                ORDER BY strStatus DESC, com.seq DESC
+            </when>
+            <when test="order == 0 and sort == 'create_datetime'">
+                ORDER BY com.create_datetime ASC, com.seq ASC
+            </when>
+            <when test="order == 1 and sort == 'create_datetime'">
+                ORDER BY com.create_datetime DESC, com.seq DESC
+            </when>
+            <when test="order == 0 and sort == 'contract_ict_name'">
+                ORDER BY NULLIF(com.contract_ict_name,'') collate "C" ASC NULLS LAST, com.seq ASC
+            </when>
+            <when test="order == 1 and sort == 'contract_ict_name'">
+                ORDER BY NULLIF(com.contract_ict_name,'') collate "C" DESC NULLS LAST, com.seq DESC
+            </when>
+        </choose>
+    </select>
+    <select id="findOne" parameterType="map" resultType="com.laidback.model.ComContract">
+        SELECT
+            cc.*
+            , b.name as userName
+            , b.login_id as loginId
+            , b.phone as userPhone
+            , b.seq as userSeq
+            , c.com_name as comName
+            , c.seq as comSeq
+          FROM com_contract cc left join member b on cc.user_seq = b.seq
+          left join company c on cc.com_seq = c.seq
+         WHERE cc.seq = ${contractSeq}
+
+    </select>
+    <select id="userCount" parameterType="int" resultType="int">
+        select count(*) from  com_contract where user_seq = #{userSeq} and delete_datetime is null
+    </select>
+</mapper>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.laidback.mapper.RepositoryReviewMapper">
+    <resultMap id="repositoryReviewResultMap" type="com.laidback.model.RepositoryReview">
+        <id property="id" column="id"/>
+    </resultMap>
+    <select id="find" parameterType="map" resultType="com.laidback.model.RepositoryReview">
+        SELECT *
+        FROM repository_review a
+        WHERE repository_seq = #{marketId}
+        <if test="offset != null and count != null">
+            LIMIT ${count} OFFSET ${offset}
+        </if>
+    </select>
+
+    <select id="count" parameterType="map" resultType="int">
+        SELECT COUNT(*)
+        FROM repository_review a
+        WHERE repository_seq = #{marketId}
+    </select>
+
+    <select id="search" parameterType="map" resultType="com.laidback.model.RepositoryReview">
+        SELECT a.*,
+        u.name, u.login_id, u.profile_img, u.position
+        FROM repository_review a
+        LEFT JOIN  member u ON u.seq = a.user_seq
+        WHERE repository_seq = #{marketId}
+        ORDER BY a.create_datetime DESC
+        <if test="offset != null and count != null">
+            LIMIT ${count} OFFSET ${offset}
+        </if>
+    </select>
+
+    <select id="countByUser" parameterType="map" resultType="int">
+        SELECT
+            COUNT(*)
+          FROM repository_review
+         WHERE 1 = 1
+           AND user_seq = #{userSeq}
+    </select>
+
+    <select id="findByUser" parameterType="map" resultType="com.laidback.model.RepositoryReview">
+        SELECT
+            rv.*
+          , rv.repository_seq as repositorySeq
+          , r.app_name as appName
+          FROM repository_review rv
+            LEFT OUTER JOIN repository r ON rv.repository_seq = r.seq
+         WHERE 1 = 1
+           AND rv.user_seq = #{userSeq}
+
+        <choose>
+            <when test="order == 0">
+                ORDER BY ${sort} ASC
+            </when>
+            <when test="order == 1">
+                ORDER BY ${sort} DESC
+            </when>
+        </choose>
+        <if test="offset != null and count != null">
+            LIMIT ${count} OFFSET ${offset}
+        </if>
+    </select>
+
+</mapper>

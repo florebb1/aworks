@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.laidback.mapper.BbsNewsroomMapper">
+    <select id="count" parameterType="map" resultType="int">
+        SELECT
+        COUNT(*)
+        FROM bbs_newsroom
+        WHERE 1 = 1
+        AND delete_datetime is null
+        <if test="displayYn != null">
+            AND display_yn = 0
+        </if>
+        <if test="startDate != null">
+            AND to_char(create_datetime,'YYYY-MM-DD') <![CDATA[ >= ]]> #{startDate}
+        </if>
+        <if test="endDate != null">
+            AND to_char(create_datetime,'YYYY-MM-DD') <![CDATA[ <= ]]> #{endDate}
+        </if>
+        <if test="searchWord != null">
+            <choose>
+                <when test="searchType == 'title' ">
+                    AND title LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <when test="searchType == 'writer' ">
+                    AND writer LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <otherwise>
+                    AND (title LIKE CONCAT('%',#{searchWord}, '%') or writer LIKE CONCAT('%',#{searchWord}, '%') )
+                </otherwise>
+            </choose>
+        </if>
+
+    </select>
+
+    <select id="find" parameterType="map" resultType="com.laidback.model.BbsNewsroom">
+        SELECT *, (select file_name from bbs_file where bbs_seq = a.seq and bbs_code = 'newsroom' and delete_datetime is null limit 1) as listFile
+        FROM bbs_newsroom a
+        WHERE 1 = 1
+        AND delete_datetime is null
+        <if test="displayYn != null">
+            AND display_yn = 0
+        </if>
+        <if test="startDate != null">
+            AND to_char(create_datetime,'YYYY-MM-DD') <![CDATA[ >= ]]> #{startDate}
+        </if>
+        <if test="endDate != null">
+            AND to_char(create_datetime,'YYYY-MM-DD') <![CDATA[ <= ]]> #{endDate}
+        </if>
+        <if test="searchWord != null">
+            <choose>
+                <when test="searchType == 'title' ">
+                    AND title LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <when test="searchType == 'writer' ">
+                    AND writer LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <otherwise>
+                    AND (title LIKE CONCAT('%',#{searchWord}, '%') or writer LIKE CONCAT('%',#{searchWord}, '%') )
+                </otherwise>
+            </choose>
+        </if>
+        ORDER BY view_datetime DESC
+        <if test="offset != null and count != null">
+            LIMIT ${count} OFFSET ${offset}
+        </if>
+    </select>
+
+    <select id="detail" parameterType="map" resultType="com.laidback.model.BbsNewsroom">
+        SELECT *
+        ,(SELECT seq FROM bbs_newsroom WHERE <![CDATA[seq < #{noticeId}]]> ORDER BY seq DESC LIMIT 1) AS pre
+        ,(SELECT title FROM bbs_newsroom WHERE <![CDATA[seq < #{noticeId}]]> ORDER BY seq DESC LIMIT 1) AS preTitle
+        ,(SELECT seq FROM bbs_newsroom WHERE <![CDATA[seq > #{noticeId}]]> ORDER BY seq ASC LIMIT 1) AS nex
+        ,(SELECT title FROM bbs_newsroom WHERE <![CDATA[seq > #{noticeId}]]> ORDER BY seq ASC LIMIT 1) AS nexTitle
+        FROM bbs_newsroom
+        WHERE seq = #{noticeId};
+    </select>
+
+    <select id="findByNewsroom" parameterType="map" resultType="com.laidback.model.BbsNewsroom">
+        SELECT
+            *, (select file_name from bbs_file where bbs_seq = a.seq and bbs_code = 'newsroom' and delete_datetime is null limit 1) as listFile
+          FROM bbs_newsroom a
+         WHERE seq = #{seq}
+    </select>
+
+
+
+    <select id="getExeclDownList" parameterType="map" resultType="com.laidback.model.BbsNewsroom">
+        SELECT
+        *, (select file_name from bbs_file where bbs_seq = a.seq and bbs_code = 'newsroom' and delete_datetime is null limit 1) as listFile
+        FROM bbs_newsroom a
+        WHERE 1 = 1
+        AND delete_datetime is null
+        <if test="noticeList != null">
+            AND seq IN
+            <foreach item="seq" collection="noticeList" separator="," open="(" close=")">
+                #{seq}
+            </foreach>
+        </if>
+        ORDER BY create_datetime DESC
+    </select>
+
+</mapper>

@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.laidback.mapper.UserMapper">
+    <select id="count" parameterType="map" resultType="int">
+        SELECT COUNT(*)
+        FROM member
+        WHERE 1=1
+        AND delete_datetime is null
+        <if test="comSeq != null">
+            AND com_seq = #{comSeq}
+        </if>
+        <if test="startDate != null">
+            AND to_char(create_datetime,'YYYY-MM-DD') <![CDATA[ >= ]]> #{startDate}
+        </if>
+        <if test="endDate != null">
+            AND to_char(create_datetime,'YYYY-MM-DD') <![CDATA[ <= ]]> #{endDate}
+        </if>
+        <if test="searchWord != null and searchWord != '' ">
+            <choose>
+                <when test="searchType == 'loginId' ">
+                    AND login_id LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <when test="searchType == 'name' ">
+                    AND name LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <when test="searchType == 'phone' ">
+                    AND phone LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <when test="searchType == 'comName' ">
+                    AND com_name LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <when test="searchType == '' ">
+                    AND (login_id LIKE CONCAT('%',#{searchWord}, '%') or name LIKE CONCAT('%',#{searchWord}, '%') or phone LIKE CONCAT('%',#{searchWord}, '%') or com_name LIKE CONCAT('%',#{searchWord}, '%') )
+                </when>
+            </choose>
+        </if>
+    </select>
+
+    <select id="find" parameterType="map" resultType="com.laidback.model.User">
+        SELECT * ,
+        case when level=1 then 'U'
+        when level=2 then 'C'
+        else 'U'
+        end as levelStr
+
+        FROM member
+        WHERE 1=1
+        AND delete_datetime is null
+        <if test="comSeq != null">
+            AND com_seq = #{comSeq}
+        </if>
+        <if test="startDate != null">
+            AND to_char(create_datetime,'YYYY-MM-DD') <![CDATA[ >= ]]> #{startDate}
+        </if>
+        <if test="endDate != null">
+            AND to_char(create_datetime,'YYYY-MM-DD') <![CDATA[ <= ]]> #{endDate}
+        </if>
+        <if test="searchWord != null and searchWord != '' ">
+            <choose>
+                <when test="searchType == 'loginId' ">
+                    AND login_id LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <when test="searchType == 'name' ">
+                    AND name LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <when test="searchType == 'phone' ">
+                    AND phone LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <when test="searchType == 'comName' ">
+                    AND com_name LIKE CONCAT('%',#{searchWord}, '%')
+                </when>
+                <when test="searchType == '' ">
+                    AND (login_id LIKE CONCAT('%',#{searchWord}, '%') or name LIKE CONCAT('%',#{searchWord}, '%') or phone LIKE CONCAT('%',#{searchWord}, '%') or com_name LIKE CONCAT('%',#{searchWord}, '%') )
+                </when>
+            </choose>
+        </if>
+        <choose>
+            <when test="order == 0 and sort == 'name'">
+                ORDER BY NULLIF(name, '') collate "C" ASC NULLS LAST, seq ASC
+            </when>
+            <when test="order == 0 and sort == 'com_name'">
+                ORDER BY NULLIF(com_name, '') collate "C" ASC NULLS LAST, seq ASC
+            </when>
+            <when test="order == 0 and sort == 'position'">
+                ORDER BY NULLIF(position, '') collate "C" ASC NULLS LAST, seq ASC
+            </when>
+            <when test="order == 0 and sort == 'login_id'">
+                ORDER BY NULLIF(login_id, '') collate "C" ASC NULLS LAST, seq ASC
+            </when>
+            <when test="order == 0 and sort == 'create_datetime'">
+                ORDER BY ${sort} ASC NULLS LAST, seq ASC
+            </when>
+            <when test="order == 0 and sort == 'level'">
+                ORDER BY levelStr ASC, seq ASC
+            </when>
+            <when test="order == 0 and sort == 'phone'">
+                ORDER BY NULLIF(phone, '') collate "C" ASC NULLS LAST, seq ASC
+            </when>
+
+            <when test="order == 1 and sort == 'name'">
+                ORDER BY NULLIF(name, '') collate "C" DESC NULLS LAST, seq DESC
+            </when>
+            <when test="order == 1 and sort == 'com_name'">
+                ORDER BY NULLIF(com_name, '') collate "C" DESC NULLS LAST, seq DESC
+            </when>
+            <when test="order == 1 and sort == 'position'">
+                ORDER BY NULLIF(position, '') collate "C" DESC NULLS LAST, seq DESC
+            </when>
+            <when test="order == 1 and sort == 'login_id'">
+                ORDER BY NULLIF(login_id, '') collate "C" DESC NULLS LAST, seq DESC
+            </when>
+            <when test="order == 1 and sort == 'create_datetime'">
+                ORDER BY ${sort} DESC NULLS LAST, seq DESC
+            </when>
+            <when test="order == 1 and sort == 'level'">
+                ORDER BY levelStr DESC, seq DESC
+            </when>
+            <when test="order == 1 and sort == 'phone'">
+                ORDER BY NULLIF(phone, '') collate "C" DESC NULLS LAST, seq DESC
+            </when>
+        </choose>
+        <if test="offset != null and count != null">
+            LIMIT ${count} OFFSET ${offset}
+        </if>
+    </select>
+
+    <select id="loginIdChk" parameterType="map" resultType="int">
+        SELECT COUNT(*)
+        FROM member
+        WHERE 1=1 and delete_datetime IS NULL
+        <if test="id != null and id != ''">
+            AND login_id = #{id}
+        </if>
+    </select>
+
+    <select id="loginPwChk" parameterType="map" resultType="int">
+        SELECT COUNT(*)
+        FROM member
+        where 1=1 and delete_datetime IS NULL
+        <if test="id != null and id != ''">
+            AND login_id = #{id}
+        </if>
+        <if test="pw != null and pw != ''">
+            AND login_pw = #{pw}
+        </if>
+    </select>
+
+    <select id="getUserList" resultType="com.laidback.model.User">
+        SELECT
+            *
+          FROM member u
+         WHERE u.com_seq is null and delete_datetime IS NULL;
+    </select>
+
+    <select id="findByContractPerson" parameterType="int" resultType="com.laidback.model.User">
+        SELECT
+            *
+          FROM member u
+         WHERE u.seq = #{contractPerson}
+    </select>
+
+    <select id="findPw" parameterType="map" resultType="com.laidback.model.User">
+        SELECT *
+        FROM member
+        WHERE 1=1 and delete_datetime IS NULL
+        <if test="id != null and id != ''">
+            AND login_id = #{id}
+        </if>
+        order by seq desc
+        limit 1
+    </select>
+
+    <select id="findByUser" parameterType="map" resultType="com.laidback.model.User">
+        SELECT
+        *
+        FROM member u
+        LEFT OUTER JOIN company com ON u.com_seq = com.seq
+        WHERE 1 = 1 and u.delete_datetime IS NULL
+        <if test="seq != null">
+            AND u.seq = #{seq}
+        </if>
+        <if test="loginId != null and loginId != ''">
+            AND u.login_id = #{loginId}
+        </if>
+    </select>
+
+    <select id="findBySeq" parameterType="map" resultType="int">
+        SELECT
+        seq
+        FROM member
+        WHERE 1 = 1 and delete_datetime IS NULL
+        <if test="loginId != null and loginId != ''">
+            AND login_id = #{loginId}
+        </if>
+    </select>
+
+    <select id="getTotalUserCnt" resultType="com.laidback.model.User">
+        SELECT
+            (SELECT COUNT(*) FROM trial_user) AS trialUserCnt
+          , (SELECT COUNT(*) FROM member WHERE level = 1 and delete_datetime IS NULL) AS userCnt
+          , (SELECT COUNT(*) FROM member WHERE level IN (2, 3) and delete_datetime IS NULL) AS contractUserCnt
+    </select>
+
+    <select id="userNameSearch" parameterType="map" resultType="com.laidback.model.User">
+        SELECT
+            u.*
+          FROM member u
+         WHERE 1 = 1
+           AND u.delete_datetime IS NULL
+           AND ( u.login_id LIKE CONCAT('%', #{userName}, '%') or u.name LIKE CONCAT('%', #{userName}, '%') )
+           ORDER BY seq desc
+    </select>
+
+    <select id="getExeclDownList" parameterType="map" resultType="com.laidback.model.User">
+        SELECT
+        *,
+        case when level=1 then 'U'
+        when level=2 then 'C'
+        else 'U'
+        end as levelStr
+        FROM member
+        WHERE 1 = 1 and delete_datetime IS NULL
+        <if test="userList != null">
+            AND seq IN
+            <foreach item="seq" collection="userList" separator="," open="(" close=")">
+                #{seq}
+            </foreach>
+        </if>
+        <choose>
+            <when test="order == 0 and sort == 'name'">
+                ORDER BY NULLIF(name, '') collate "C" ASC NULLS LAST, seq ASC
+            </when>
+            <when test="order == 0 and sort == 'com_name'">
+                ORDER BY NULLIF(com_name, '') collate "C" ASC NULLS LAST, seq ASC
+            </when>
+            <when test="order == 0 and sort == 'position'">
+                ORDER BY NULLIF(position, '') collate "C" ASC NULLS LAST, seq ASC
+            </when>
+            <when test="order == 0 and sort == 'login_id'">
+                ORDER BY NULLIF(login_id, '') collate "C" ASC NULLS LAST, seq ASC
+            </when>
+            <when test="order == 0 and sort == 'create_datetime'">
+                ORDER BY ${sort} ASC NULLS LAST, seq ASC
+            </when>
+            <when test="order == 0 and sort == 'level'">
+                ORDER BY levelStr ASC, seq ASC
+            </when>
+            <when test="order == 0 and sort == 'phone'">
+                ORDER BY NULLIF(phone, '') collate "C" ASC NULLS LAST, seq ASC
+            </when>
+
+            <when test="order == 1 and sort == 'name'">
+                ORDER BY NULLIF(name, '') collate "C" DESC NULLS LAST, seq DESC
+            </when>
+            <when test="order == 1 and sort == 'com_name'">
+                ORDER BY NULLIF(com_name, '') collate "C" DESC NULLS LAST, seq DESC
+            </when>
+            <when test="order == 1 and sort == 'position'">
+                ORDER BY NULLIF(position, '') collate "C" DESC NULLS LAST, seq DESC
+            </when>
+            <when test="order == 1 and sort == 'login_id'">
+                ORDER BY NULLIF(login_id, '') collate "C" DESC NULLS LAST, seq DESC
+            </when>
+            <when test="order == 1 and sort == 'create_datetime'">
+                ORDER BY ${sort} DESC NULLS LAST, seq DESC
+            </when>
+            <when test="order == 1 and sort == 'level'">
+                ORDER BY levelStr DESC, seq DESC
+            </when>
+            <when test="order == 1 and sort == 'phone'">
+                ORDER BY NULLIF(phone, '') collate "C" DESC NULLS LAST, seq DESC
+            </when>
+        </choose>
+    </select>
+
+</mapper>

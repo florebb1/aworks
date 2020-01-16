@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.laidback.mapper.FaqMapper">
+
+    <select id="find" parameterType="map" resultType="com.laidback.model.Faq">
+        SELECT * FROM faq
+        WHERE 1=1
+        <if test="filter != 0">
+            AND faq_type = #{filter}
+        </if>
+        order by seq
+    </select>
+
+    <select id="count" parameterType="map" resultType="int">
+        SELECT COUNT(*) FROM faq
+        WHERE 1=1
+        <if test="filter != 0">
+            AND faq_type = #{filter}
+        </if>
+    </select>
+
+</mapper>

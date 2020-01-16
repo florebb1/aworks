@@ -1,0 +1,93 @@
+server:
+  port: 8097
+  session:
+    timeout: 38000
+    persistent: true
+
+endpoints:
+  enabled: false
+  shutdown:
+    enabled: false
+  jmx:
+    enabled: false
+
+
+spring:
+  profiles:
+    active: local
+  devtools:
+    livereload:
+      enabled: true
+  freemarker:
+    cache: false
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+  datasource:
+    dataSourceClassName: org.postgresql.Driver
+    url: jdbc:postgresql://117.52.98.39:5432/portal_dev?createDatabaseIfNotExist=true
+    username: portal_dev
+    password: 1234qwer
+
+  mvc:
+    favicon:
+      enabled: false
+
+  http:
+    multipart:
+      maxFileSize: 300MB
+      maxRequestSize: 300MB
+
+  mail:
+    host: smtp.gmail.com
+    port: 465
+    username: kjh@laidback.co.kr
+    password: 'wlgns9337'
+    protocol: smtp
+    properties:
+      mail:
+        smtp:
+          start-tls-enable: true
+          auth: true
+          ssl:
+            enable: true
+        transport:
+          protocol: smtps
+
+amazonProperties:
+  endpointUrl: https://s3.ap-northeast-2.amazonaws.com
+  accessKey: AKIA2A5WUWVQQKDKMA7B
+  secretKey: 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
+  bucketName: a.works
+mybatis:
+  config: classpath:mybatis-config.xml
+
+
+logging:
+  config: classpath:logback.xml
+
+log4j:
+  logger:
+    jdbc:
+      sqltiming: DEBUG
+    package:
+      path: TRACE
+    java:
+      sql:
+        Connection: DEBUG
+        Statement: DEBUG
+        PreparedStatement: DEBUG
+        ResultSet: DEBUG
+aes:
+  pw: poscoict
+
+workcenter:
+  url: http://117.52.98.39:9090
+  clientId: cloudrpa-client1
+  clientSecret: 7aKTMjx9qkHHipSg
+  grantType: password
+  userName: poscoict@poscoict.com
+  password: poscoict
+
